@@ -89,7 +89,7 @@ rule tokenize = parse
 
 | '\"' letter* '\"' as lxm { SLITERAL(remove_quotes lxm) }
 | digit+ as lxm { ILITERAL(int_of_string lxm) }
-| digit+ '.' digit* as lxm { FLITERAL(lxm) }
+| digit+ '.' digit* as lxm { FLITERAL(lxm) } (* floating point 1e5 to be implemented *)
 | ['a'-'z' 'A'-'Z' '_']['a'-'z' 'A'-'Z' '0'-'9' '_']*  as lxm { ID(lxm) }
 | eof     { EOF }
 | _ as char { raise (Failure("illegal character" ^ Char.escaped char)) } 
