@@ -1,9 +1,10 @@
+(* Ocamllex scanner for Bathon *)
+
 { open Parser 
 }
 
 let digit = ['0'-'9']
 let letter = ['a'-'z' 'A'-'Z']
-let digit = ['0'-'9']
 
 rule tokenize = parse
  [' ' '\t' '\r' '\n'] { tokenize lexbuf }
@@ -11,8 +12,8 @@ rule tokenize = parse
 | "True"     { BLITERAL (true) }
 | "False"    { BLITERAL (false) }
 | "None"     { NONE }
-| "int"      { INT }
-| "float"    { FLOAT }
+| "int"      { INT }  (* type keywords may be unnecessary, types inferenced by values instead of keywords *)
+| "float"    { FLOAT } 
 | "bool"     { BOOL }
 | "str"      { STR }
 | "list"     { LIST }
@@ -34,9 +35,9 @@ rule tokenize = parse
 (* Comparison Operators *)
 | "=="       { EQ }
 | "=<"       { LTE }
-| "<"        { LT }
+| "<"        { LT } (* dup *)
 | ">="       { GTE }
-| ">"        { GT }
+| ">"        { GT } (* dup *)
 | "!="       { NE }
 ( * Logical Operators)
 | "not" 	   { NOT }
@@ -46,8 +47,8 @@ rule tokenize = parse
 | '&'        { BAND }
 | '|'        { BOR }
 | '^'        { BXOR }
-| "<<"       { BLTS }
-| ">>"       { BGTS }
+| "<<"       { BLTS } (* LS: left shift *)
+| ">>"       { BGTS } (* RS: right shift *)
 | '~'        { BNOT}
 ( * Membership Operator *)
 | "in"       { IN }
@@ -84,12 +85,12 @@ rule tokenize = parse
 (* Class *)
 | "class"    { CLASS } 
 (* Command *)
-| '`'        {command lexbuf}
+| '`'        {command lexbuf} (* implementation of command could be wrong -> COMMAND *)
 
-| string_literal as lxm { SLITERAL(remove_quotes lxm) }
+| '\"' letter* '\"' as lxm { SLITERAL(remove_quotes lxm) }
 | digit+ as lxm { ILITERAL(int_of_string lxm) }
-| flt as lxm { FLITERAL(lxm) }
-| letter['a'-'z' 'A'-'Z' '0'-'9' '_']*  as lxm { ID(lxm) }
+| digit+ '.' digit* as lxm { FLITERAL(lxm) }
+| ['a'-'z' 'A'-'Z' '_']['a'-'z' 'A'-'Z' '0'-'9' '_']*  as lxm { ID(lxm) }
 | eof     { EOF }
 | _ as char { raise (Failure("illegal character" ^ Char.escaped char)) } 
 
