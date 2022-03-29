@@ -168,7 +168,7 @@ let check (functions, statements) =
       SWhile(check_bool_expr e, check_stmt st)
     | For(e1, e2, st) -> 
       SFor(check_expr e1, check_expr e2, check_stmt st)
-    (* TODO *)
+    (* TODO DONE *)
     (* may be deleted as there is no return type to check *)
     | Return e ->
       let (t, e') = check_expr e in 

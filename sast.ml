@@ -13,7 +13,7 @@ and sx =
   | SBinop of sexpr * op * sexpr
   | SUnop of uop * sexpr
   | SCall of string * sexpr list
-  | SCmd of string (* TBD *)
+  | SCmd of sexpr (* TBD *)
 
 type sstmt = 
     SBlock of sstmt list
