@@ -44,7 +44,7 @@ program:
 decls:
    /* nothing */ { ([], [])               }
  | stmt_list {([], $1)}
- | fdecl_list stmt_list {([$1, $2])}
+ | fdecl_list stmt_list {($1, $2)}
 
 /* int x */
 vdecl:
