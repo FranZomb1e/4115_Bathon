@@ -103,7 +103,7 @@ let rec string_of_expr = function
     f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
   | Cmd(c) -> c 
 
-let string_of_stmt = function     
+let rec string_of_stmt = function     
     Block(stmts) ->
         "{\n" ^ String.concat "" (List.map string_of_stmt stmts) ^ "}\n"
   | Expr(expr) -> string_of_expr expr ^ "\n"

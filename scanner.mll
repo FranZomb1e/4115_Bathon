@@ -1,7 +1,6 @@
 (* Ocamllex scanner for Bathon *)
 
-{ open Parser 
-}
+{ open Bathonparse }
 
 let digit = ['0'-'9']
 let letter = ['a'-'z' 'A'-'Z']
@@ -39,18 +38,18 @@ rule tokenize = parse
 | ">="       { GEQ }
 | ">"        { GT } (* dup *)
 | "!="       { NEQ }
-( * Logical Operators)
+(* Logical Operators *)
 | "not" 	   { NOT }
 | "and"      { AND }
 | "or"       { OR }
-( * Bitwise Operation *)
+(* Bitwise Operation *)
 | '&'        { BAND }
 | '|'        { BOR }
 | '^'        { BXOR }
 | "<<"       { BLS } (* LS: left shift *)
 | ">>"       { BRS } (* RS: right shift *)
 | '~'        { BNOT}
-( * Membership Operator *)
+(* Membership Operator *)
 | "in"       { IN }
 (* Delimiter *)
 | ':'        { COLON }

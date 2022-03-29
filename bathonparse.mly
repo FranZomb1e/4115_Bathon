@@ -10,7 +10,7 @@ open Ast
 %token PLUS MINUS TIMES DIVIDE MOD FDIVIDE EXP
 %token EQ NEQ GT LT GEQ LEQ AND OR IN
 %token IF ELIF ELSE FOR WHILE TRY EXCEPT ASSERT RAISING CONTINUE BREAK PASS 
-%token INT BOOL STR LIST TUPLE RANGE DICT SET NONE
+%token INT FLOAT BOOL STR LIST TUPLE RANGE DICT SET NONE
 /* return, COMMA token */
 %token DEF RETURN COMMA CLASS
 %token <int> LITERAL
@@ -89,7 +89,7 @@ stmt:
   | LBRACE stmt_list RBRACE                 { Block $2 }
   /* if (condition) { block1} else {block2} */
   /* if (condition) stmt else stmt */
-  | IF LPAREN expr RPAREN stmt ELIF LPAREN expr RPAREN stmt ELSE stmt    { IfElif($3, $5, $8, $10, $11) }
+  | IF LPAREN expr RPAREN stmt ELIF LPAREN expr RPAREN stmt ELSE stmt    { IfElif($3, $5, $8, $10, $12) }
   | IF LPAREN expr RPAREN stmt ELSE stmt    { If($3, $5, $7) }
   | FOR LPAREN ID IN expr RPAREN stmt       { For($3, $5, $7)}
   | WHILE LPAREN expr RPAREN stmt           { While ($3, $5)  }
@@ -108,7 +108,7 @@ expr:
   | expr DIVIDE expr { Binop($1, Div,   $3)   }
   | expr FDIVIDE expr { Binop($1, FDiv, $3)   }
   | expr MOD    expr { Binop($1, Modulo, $3)  }
-  | expr Exp    expr { Binop($1, Exp,   $3)   }
+  | expr EXP    expr { Binop($1, Exp,   $3)   }
   | expr EQ     expr { Binop($1, Equal, $3)   }
   | expr NEQ    expr { Binop($1, Neq, $3)     }
   | expr LEQ    expr { Binop($1, Leq, $3)     }
@@ -129,7 +129,7 @@ expr:
   | LPAREN expr RPAREN { $2                   }
   /* call */
   | ID LPAREN args_opt RPAREN { Call ($1, $3)  }
-  | COMMAND expr COMMAND      { Cmd ($1)}
+  | COMMAND expr COMMAND      { Cmd ($2)}
 
 /* args_opt*/
 args_opt:
