@@ -61,6 +61,7 @@ fdecl:
   {
     {
       fname=$2;
+      formals=$4
       body=$7
     }
   }
