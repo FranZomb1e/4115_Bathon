@@ -121,7 +121,9 @@ expr:
   | expr BXOR   expr { Binop($1, Bxor,  $3)   }
   | expr BLS    expr { Binop($1, Ls,    $3)   }
   | expr BRS    expr { Binop($1, Rs,    $3)   }
-  | expr BNOT   expr { Binop($1, Bnot,  $3)   }
+  | expr NEG    expr { Unop(Neg, $2)          }
+  | expr NOT    expr { Unop(Not, $2)          }
+  | expr BNOT   expr { Unop(Bnot, $2)          }
   | ID ASSIGN expr   { Assign($1, $3)         }
   | LPAREN expr RPAREN { $2                   }
   /* call */

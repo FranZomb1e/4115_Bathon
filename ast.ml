@@ -2,7 +2,7 @@
 
 type op = Modulo | Greater | Less | Add | Sub | Mul 
 | Div | Fdiv | Exp | Equal | Leq | Geq | Neq | And | Or 
-| Band | Bor | Bxor | Ls | Rs | Bnot 
+| Band | Bor | Bxor | Ls | Rs 
 (* Fdiv: floor division. 3 // 2 = 1 *)
 (* Exp: exponent. 2 ** 3 = 8 *)
 (* And: logical and. True And False = False *)
@@ -14,6 +14,12 @@ type op = Modulo | Greater | Less | Add | Sub | Mul
 (* Rs: bitwise right shift. *) 
 (* Bnot: negate. ~0 = -1 *)
 
+type uop = Neg | Not | Bnot 
+(* Neg: negative -. -2 *)
+(* Not: logical not. not True = False *)
+(* Bnot: negate. ~0 = -1 *)
+
+
 type typ = Int | Bool | Str | Float
 
 type expr = 
@@ -24,7 +30,8 @@ type expr =
   | FloatLit of float 
   | Id of string
   | Binop of expr * op * expr 
-  | Call of string of expr list
+  | Unop of uop * expr
+  | Call of string * expr list
   | Cmd of string (* variable support '$x' to be implemented *)
 
 type stmt = 
@@ -68,14 +75,20 @@ let string_of_op = function
   | Bxor -> "^" 
   | Ls -> "<<" 
   | Rs -> ">>" 
+
+let string_of_uop = function
+    Neg -> "-"
+  | Not -> "not"
   | Bnot -> "~"
 
 let string_of_typ = function
     Int -> "int"
   | Bool -> "bool"
+  | Float -> "float"
+  | Str -> "string"
 
-let string_of_expr = function
-    Assign(v, e) -> v ^ " = " string_of_expr e
+let rec string_of_expr = function
+    Assign(v, e) -> v ^ " = " ^ string_of_expr e
   | IntLit(l) -> string_of_int l
   | BoolLit(true) -> "true"
   | BoolLit(false) -> "false"
@@ -84,6 +97,7 @@ let string_of_expr = function
   | Id(s) -> s
   | Binop(e1, o, e2) ->
     string_of_expr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_expr e2
+  | Unop(u, e) -> string_of_uop u ^ string_of_expr e
   | Call(f, el) -> 
     f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
   | Cmd(c) -> c 
@@ -91,10 +105,10 @@ let string_of_expr = function
 let string_of_stmt = function     
     Block(stmts) ->
         "{\n" ^ String.concat "" (List.map string_of_stmt stmts) ^ "}\n"
-  | Expr(expr) -> string_of_expr expr ^ ";\n"
-  | If(e, s1, s2) ->  "if " ^ string_of_expr e ^ "\n" ^
+  | Expr(expr) -> string_of_expr expr ^ "\n"
+  | If(e, s1, s2) ->  "if (" ^ string_of_expr e ^ ")\n" ^
                       string_of_stmt s1 ^ "else\n" ^ string_of_stmt s2
-  | While(e, s) -> "while " ^ string_of_expr e ^ " " ^ string_of_stmt s
+  | While(e, s) -> "while (" ^ string_of_expr e ^ ")\n" ^ string_of_stmt s
   | For(e1, e2, s) -> 
     "for " ^ string_of_expr e1 ^ " in " ^ string_of_expr e2 ^ " " ^ string_of_stmt s
   | Return(expr) -> "return " ^ string_of_expr expr ^ ";\n"
