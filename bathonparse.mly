@@ -5,9 +5,10 @@ open Ast
 %}
 
 %token COLON SEMI PERIOD UNDERSCORE COMMAND LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET ASSIGN MATCH WITH LAMBDA
-%token BAND BOR BXOR BNOT BLS BRS
+%token BAND BOR BXOR BLS BRS
+%token NEG NOT BNOT
 %token PLUS MINUS TIMES DIVIDE MOD FDIVIDE EXP
-%token EQ NEQ GT LT GEQ LEQ NOT AND OR IN
+%token EQ NEQ GT LT GEQ LEQ AND OR IN
 %token IF ELIF ELSE FOR WHILE TRY EXCEPT ASSERT RAISING CONTINUE BREAK PASS 
 %token INT BOOL STR LIST TUPLE RANGE DICT SET NONE
 /* return, COMMA token */
@@ -24,15 +25,15 @@ open Ast
 
 %right COMMAND
 %right ASSIGN MATCH WITH LAMBDA IN
-%right NOT
+%right NEG NOT BNOT
 %left OR
 %left AND
-%left EQ NEQ NOT
+%left EQ NEQ
 %left GT LT GTE LTE
 %left PLUS MINUS
 %left TIMES DIVIDE FDIVIDE
 %left MOD EXP
-%left BAND BOR BXOR BNOT BLS BRS
+%left BAND BOR BXOR BLS BRS
 
 %%
 
@@ -121,9 +122,9 @@ expr:
   | expr BXOR   expr { Binop($1, Bxor,  $3)   }
   | expr BLS    expr { Binop($1, Ls,    $3)   }
   | expr BRS    expr { Binop($1, Rs,    $3)   }
-  | expr NEG    expr { Unop(Neg, $2)          }
-  | expr NOT    expr { Unop(Not, $2)          }
-  | expr BNOT   expr { Unop(Bnot, $2)          }
+  | MINUS expr %prec NEG  { Unop(Neg, $2)          }
+  | NOT expr         { Unop(Not, $2)          }
+  | BNOT expr        { Unop(Bnot, $2)          }
   | ID ASSIGN expr   { Assign($1, $3)         }
   | LPAREN expr RPAREN { $2                   }
   /* call */
