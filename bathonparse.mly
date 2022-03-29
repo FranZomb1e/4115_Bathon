@@ -13,7 +13,7 @@ open Ast
 %token INT FLOAT BOOL STR LIST TUPLE RANGE DICT SET NONE
 /* return, COMMA token */
 %token DEF RETURN COMMA CLASS
-%token <int> LITERAL
+%token <int> ILITERAL
 %token <float> FLITERAL
 %token <string> SLITERAL
 %token <bool> BLIT
@@ -97,7 +97,7 @@ stmt:
   | RETURN expr                             { Return $2      }
 
 expr:
-    LITERAL          { IntLit($1)            }
+    ILITERAL         { IntLit($1)             }
   | BLIT             { BoolLit($1)            }
   | ID               { Id($1)                 }
   | FLITERAL         { FloatLit($1)           }
