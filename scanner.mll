@@ -4,6 +4,8 @@
 
 let digit = ['0'-'9']
 let letter = ['a'-'z' 'A'-'Z']
+let float = (digit+) '.' (digit+)
+
 
 rule tokenize = parse
  [' ' '\t' '\r' '\n'] { tokenize lexbuf }
@@ -84,11 +86,11 @@ rule tokenize = parse
 (* Class *)
 | "class"    { CLASS } 
 (* Command *)
-| '`'        { COMMAND } (* implementation of command could be wrong -> COMMAND *)
+| '`'        { command lexbuf } (* implementation of command could be wrong -> COMMAND *)
 
 (* | '\"' letter* '\"' as lxm { SLITERAL(remove_quotes lxm) } *)
 | digit+ as lxm { ILITERAL(int_of_string lxm) }
-| digit+ '.' digit* as lxm { FLITERAL(float_of_string lxm) } (* floating point 1e5 to be implemented *)
+| float as lxm  { FLITERAL(float_of_string lxm) }
 | ['a'-'z' 'A'-'Z' '_']['a'-'z' 'A'-'Z' '0'-'9' '_']*  as lxm { ID(lxm) }
 | eof     { EOF }
 | _ as char { raise (Failure("illegal character" ^ Char.escaped char)) } 
