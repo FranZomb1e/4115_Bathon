@@ -24,9 +24,9 @@ type sstmt =
   | Return of sexpr
 
 type sfunc_def = {
+  srtyp: typ;
   sfname: string;
   sformals: bind list;
-  slocals: bind list;
   sbody: sstmt list;
 }
 
@@ -61,7 +61,7 @@ let rec string_of_sstmt = function
   | SReturn(expr) -> "return " ^ string_of_sexpr expr ^ "\n"
 
 let string_of_sfdecl fedcl =
-  "def " ^ fedcl.sfname ^ "(" ^ String.concat "," (List.map fst fedcl.sformals) ^
+  "def " ^ fedcl.sfname ^ " : " ^ string_of_typ fedcl.srtyp ^ "(" ^ String.concat "," (List.map fst fedcl.sformals) ^
   ")\n{\n" ^
   String.concat "" (List.map string_of_sstmt fedcl.sbody) ^ 
   "}\n"

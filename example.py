@@ -1,6 +1,6 @@
 # The GCD algorithm in Bathon
 
-def gcd(a : int, b : int) {
+def gcd : int (a : int, b : int) {
   while (a != b) {
     if (b < a) a = a - b 
     else b = b - a

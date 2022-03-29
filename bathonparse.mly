@@ -46,7 +46,7 @@ decls:
  | stmt_list {([], $1)}
  | fdecl_list stmt_list {($1, $2)}
 
-/* int x */
+/* x:int */
 vdecl:
   ID COLON typ { ($1, $3) }
 
@@ -58,12 +58,13 @@ typ:
 
 /* fdecl */
 fdecl:
-  DEF ID LPAREN formals_opt RPAREN LBRACE stmt_list RBRACE
+  DEF ID COLON typ LPAREN formals_opt RPAREN LBRACE stmt_list RBRACE
   {
     {
       fname=$2;
-      formals=$4
-      body=$7
+      rtyp=$4;
+      formals=$6;
+      body=$9;
     }
   }
 
@@ -89,9 +90,9 @@ stmt:
   | LBRACE stmt_list RBRACE                 { Block $2 }
   /* if (condition) { block1} else {block2} */
   /* if (condition) stmt else stmt */
-  | IF LPAREN expr RPAREN stmt ELIF LPAREN expr RPAREN stmt ELSE stmt    { IfElif($3, $5, $8, $10, $12) }
+  // | IF LPAREN expr RPAREN stmt ELIF LPAREN expr RPAREN stmt ELSE stmt    { IfElif($3, $5, $8, $10, $12) }
   | IF LPAREN expr RPAREN stmt ELSE stmt    { If($3, $5, $7) }
-  | FOR LPAREN ID IN expr RPAREN stmt       { For($3, $5, $7)}
+  | FOR LPAREN expr IN expr RPAREN stmt       { For($3, $5, $7)}
   | WHILE LPAREN expr RPAREN stmt           { While ($3, $5)  }
   /* return */
   | RETURN expr                             { Return $2      }
@@ -106,7 +107,7 @@ expr:
   | expr MINUS  expr { Binop($1, Sub,   $3)   }
   | expr TIMES  expr { Binop($1, Mul,   $3)   }
   | expr DIVIDE expr { Binop($1, Div,   $3)   }
-  | expr FDIVIDE expr { Binop($1, FDiv, $3)   }
+  | expr FDIVIDE expr { Binop($1, Fdiv, $3)   }
   | expr MOD    expr { Binop($1, Modulo, $3)  }
   | expr EXP    expr { Binop($1, Exp,   $3)   }
   | expr EQ     expr { Binop($1, Equal, $3)   }

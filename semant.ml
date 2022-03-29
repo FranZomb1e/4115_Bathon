@@ -16,13 +16,14 @@ let check (functions, statements) =
   (* check binds *)
 
 
+
   (* Collect function declarations for built-in functions: no bodies
      current version with print function where output is only "Hello World" *)
   let built_in_decls =
     StringMap.add "print" {
+      rtyp = Int;
       fname = "print";
       formals = [("x", Int)];
-      locals = [];
       body = []
     } StringMap.empty
   in
@@ -61,7 +62,7 @@ let check (functions, statements) =
     (* Revise needed *)
     (* Build local symbol table of variables for this function *)
     let symbols = List.fold_left (fun m (name, ty) -> StringMap.add name ty m)
-        StringMap.empty (func.formals @ func.locals)
+        StringMap.empty (func.formals)
     in
 
     (* TODO *)
@@ -126,7 +127,7 @@ let check (functions, statements) =
         in
         (ot, SUnop(op, (t, e'))) 
 
-      (* TODO *)
+      (* TODO DONE *)
       (* revise needed for there is no return type *)
       | Call(fname, args) as call ->
         let fd = find_func fname in 
@@ -134,6 +135,14 @@ let check (functions, statements) =
         if List.length args != param_length then 
           raise (Failure ("expecting " ^ string_of_int param_length ^ 
                           " arguments in " ^ string_of_expr call))
+        else let check_call (_, _, ft) e =
+          let (et, e') = check_expr e in
+          let err = "illegal argument found " ^ string_of_type et ^
+                    " expected " ^ string_of_typ ft ^ " in " ^ string_of_expr e
+          in (check_assign ft et err, e')
+        in
+        let args' = List.map2 check_call fd.formals args
+        in (fd.rtyp, SCall(fname, args'))
     in 
 
     let check_bool_expr e = 
@@ -162,12 +171,15 @@ let check (functions, statements) =
     (* TODO *)
     (* may be deleted as there is no return type to check *)
     | Return e ->
-      pass
+      let (t, e') = check_expr e in 
+      if t = func.rtyp then SReturn (t, e')
+      else raise (Failure("return gives " ^ string_of_typ t ^ " expected " ^
+                          string_of_typ func.rtyp ^ " in " ^ string_of_expr e))
     in
     {
+      srtyp = func.rtyp;
       sfname = func.fname;
       sformals = func.foramls;
-      slocals = func.slocals
       sbody = check_stmt_list func.body
     }
 in 

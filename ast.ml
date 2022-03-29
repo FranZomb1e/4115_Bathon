@@ -45,11 +45,11 @@ type stmt =
 type bind = string * typ (* In function definition, def foo(var : type) *)
 
 type func_def = {
+    rtyp: typ;
     fname: string;
     formals: bind list;
-    locals: bind list;
     body: stmt list;
-} (* def fname(formals) {body} *)
+} (* def fname:rtyp(formals) {body} *)
 
 type program = func_def list * stmt list
 
@@ -115,7 +115,7 @@ let rec string_of_stmt = function
   | Return(expr) -> "return " ^ string_of_expr expr ^ ";\n"
 
 let string_of_fdecl fdecl = 
-  "def " ^ fdecl.fname ^ "(" ^ String.concat ", " (List.map fst fdecl.formals) ^
+  "def " ^ fdecl.fname ^ " : " ^ string_of_typ fdecl.rtyp ^ "(" ^ String.concat ", " (List.map fst fdecl.formals) ^
   ")\n{\n" ^
   String.concat "" (List.map string_of_stmt fdecl.body) ^
   "}\n"
