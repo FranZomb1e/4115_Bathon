@@ -84,7 +84,7 @@ rule tokenize = parse
 (* Class *)
 | "class"    { CLASS } 
 (* Command *)
-| '`'        {COMMAND} (* implementation of command could be wrong -> COMMAND *)
+| '`'        { COMMAND } (* implementation of command could be wrong -> COMMAND *)
 
 | '\"' letter* '\"' as lxm { SLITERAL(remove_quotes lxm) }
 | digit+ as lxm { ILITERAL(int_of_string lxm) }
