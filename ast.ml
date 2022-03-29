@@ -47,6 +47,7 @@ type bind = string * typ (* In function definition, def foo(var : type) *)
 type func_def = {
     fname: string;
     formals: bind list;
+    locals: bind list;
     body: stmt list;
 } (* def fname(formals) {body} *)
 
