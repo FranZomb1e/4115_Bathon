@@ -9,8 +9,8 @@ let letter = ['a'-'z' 'A'-'Z']
 rule tokenize = parse
  [' ' '\t' '\r' '\n'] { tokenize lexbuf }
 | "#"        { comment lexbuf }
-| "True"     { BLITERAL (true) }
-| "False"    { BLITERAL (false) }
+| "True"     { BLIT (true) }
+| "False"    { BLIT (false) }
 | "None"     { NONE }
 | "int"      { INT }  (* type keywords may be unnecessary, types inferenced by values instead of keywords *)
 | "float"    { FLOAT } 
@@ -19,7 +19,7 @@ rule tokenize = parse
 | "list"     { LIST }
 | "tuple"    { TUPLE }
 | "range"    { RANGE }
-| "dict"     { DCIT }
+| "dict"     { DICT }
 | "set"      { SET }
 (* Arithmetic Operators *)
 | '%'        { MOD }
@@ -30,15 +30,15 @@ rule tokenize = parse
 | '*'        { TIMES }
 | '/'        { DIVIDE }
 | "//"       { FDIVIDE } 
-| "**"       { EXPO }
+| "**"       { EXP }
 | '='        { ASSIGN }
 (* Comparison Operators *)
 | "=="       { EQ }
-| "=<"       { LTE }
+| "=<"       { LEQ }
 | "<"        { LT } (* dup *)
-| ">="       { GTE }
+| ">="       { GEQ }
 | ">"        { GT } (* dup *)
-| "!="       { NE }
+| "!="       { NEQ }
 ( * Logical Operators)
 | "not" 	   { NOT }
 | "and"      { AND }
@@ -47,8 +47,8 @@ rule tokenize = parse
 | '&'        { BAND }
 | '|'        { BOR }
 | '^'        { BXOR }
-| "<<"       { BLTS } (* LS: left shift *)
-| ">>"       { BGTS } (* RS: right shift *)
+| "<<"       { BLS } (* LS: left shift *)
+| ">>"       { BRS } (* RS: right shift *)
 | '~'        { BNOT}
 ( * Membership Operator *)
 | "in"       { IN }
@@ -56,7 +56,7 @@ rule tokenize = parse
 | ':'        { COLON }
 | '.'        { PERIOD }
 | ','        { COMMA }
-| ';'        { SEMC }
+| ';'        { SEMI }
 | '_'        { UNDERSCORE }
 | '('        { LPAREN }
 | ')'        { RPAREN }
@@ -85,7 +85,7 @@ rule tokenize = parse
 (* Class *)
 | "class"    { CLASS } 
 (* Command *)
-| '`'        {command lexbuf} (* implementation of command could be wrong -> COMMAND *)
+| '`'        {COMMAND} (* implementation of command could be wrong -> COMMAND *)
 
 | '\"' letter* '\"' as lxm { SLITERAL(remove_quotes lxm) }
 | digit+ as lxm { ILITERAL(int_of_string lxm) }
