@@ -35,7 +35,7 @@ let trd (_,_,c) = c;;
 %left OR
 %left AND
 %left EQ NEQ
-%left GT LT GTE LTE LEQ GEQ
+%left GT LT LEQ GEQ
 %left PLUS MINUS
 %left TIMES DIVIDE FDIVIDE MOD
 %left EXP
