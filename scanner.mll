@@ -1,10 +1,16 @@
 (* Ocamllex scanner for Bathon *)
 
-{ open Bathonparse }
+{ open Bathonparse
+  let remove_quotes str =
+  match String.length str with
+  | 0 | 1 | 2 -> "" 
+  | len -> String.sub str 1 (len - 2)
+}
 
 let digit = ['0'-'9']
 let letter = ['a'-'z' 'A'-'Z']
 let float = (digit+) '.' (digit+)
+let string_literal = ('"'[' '-'~']*'"')
 
 
 rule tokenize = parse
@@ -86,6 +92,7 @@ rule tokenize = parse
 | "return"   { RETURN }
 (* Class *)
 | "class"    { CLASS } 
+| string_literal as lxm { SLITERAL(remove_quotes lxm) }
 | digit+ as lxm { ILITERAL(int_of_string lxm) }
 | float as lxm  { FLITERAL(float_of_string lxm) }
 | ['a'-'z' 'A'-'Z' '_']['a'-'z' 'A'-'Z' '0'-'9' '_']*  as lxm { ID(lxm) }
