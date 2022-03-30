@@ -18,22 +18,23 @@ open Ast
 %token <string> SLITERAL
 %token <bool> BLIT
 %token <string> ID
+%token EOL
 %token EOF
 
 %start program
 %type <Ast.program> program
 
-%right COMMAND
+%right COMMAND 
 %right ASSIGN MATCH WITH LAMBDA IN
+%left BAND BOR BXOR BLS BRS
 %right NEG NOT BNOT
 %left OR
 %left AND
 %left EQ NEQ
-%left GT LT GTE LTE
+%left GT LT GTE LTE LEQ GEQ
 %left PLUS MINUS
 %left TIMES DIVIDE FDIVIDE MOD
 %left EXP
-%left BAND BOR BXOR BLS BRS
 
 %%
 
@@ -83,16 +84,16 @@ stmt_list:
   | stmt stmt_list  { $1::$2 }
 
 stmt:
-    expr                                    { Expr $1      }
+    expr EOL                                  { Expr $1      }
   | LBRACE stmt_list RBRACE                 { Block $2 }
   /* if (condition) { block1} else {block2} */
   /* if (condition) stmt else stmt */
   /* | IF LPAREN expr RPAREN stmt ELIF LPAREN expr RPAREN stmt ELSE stmt    { IfElif($3, $5, $8, $10, $12) } */
   | IF LPAREN expr RPAREN stmt ELSE stmt    { If($3, $5, $7) }
-  | FOR LPAREN expr IN expr RPAREN stmt       { For($3, $5, $7)}
+  | FOR LPAREN expr IN expr RPAREN stmt       { For($3, $5, $7)} 
   | WHILE LPAREN expr RPAREN stmt           { While ($3, $5)  }
   /* return */
-  | RETURN expr                             { Return $2      }
+  | RETURN expr EOL                            { Return $2      }
 
 expr:
     ILITERAL         { IntLit($1)             }
@@ -100,16 +101,16 @@ expr:
   | ID               { Id($1)                 }
   | FLITERAL         { FloatLit($1)           }
   | SLITERAL         { StrLit($1)             }
-  | expr PLUS   expr { Binop($1, Add,   $3)   }
+  | expr PLUS   expr { Binop($1, Add,   $3)   } 
   | expr MINUS  expr { Binop($1, Sub,   $3)   }
-  | expr TIMES  expr { Binop($1, Mul,   $3)   }
+  | expr TIMES  expr { Binop($1, Mul,   $3)   } 
   | expr DIVIDE expr { Binop($1, Div,   $3)   }
   | expr FDIVIDE expr { Binop($1, Fdiv, $3)   }
-  | expr MOD    expr { Binop($1, Modulo, $3)  }
-  | expr EXP    expr { Binop($1, Exp,   $3)   }
-  | expr EQ     expr { Binop($1, Equal, $3)   }
+  | expr MOD    expr { Binop($1, Modulo, $3)  } 
+  | expr EXP    expr { Binop($1, Exp,   $3)   } 
+  | expr EQ     expr { Binop($1, Equal, $3)   } 
   | expr NEQ    expr { Binop($1, Neq, $3)     }
-  | expr LEQ    expr { Binop($1, Leq, $3)     }
+  | expr LEQ    expr { Binop($1, Leq, $3)     }  
   | expr GEQ    expr { Binop($1, Geq, $3)     }
   | expr LT     expr { Binop($1, Less,  $3)   }
   | expr GT     expr { Binop($1, Greater, $3) }
@@ -119,15 +120,15 @@ expr:
   | expr BOR    expr { Binop($1, Bor,   $3)   }
   | expr BXOR   expr { Binop($1, Bxor,  $3)   }
   | expr BLS    expr { Binop($1, Ls,    $3)   }
-  | expr BRS    expr { Binop($1, Rs,    $3)   }
-  | MINUS expr %prec NEG  { Unop(Neg, $2)          }
+  | expr BRS    expr { Binop($1, Rs,    $3)   } 
+  | MINUS expr %prec NEG  { Unop(Neg, $2)          } 
   | NOT expr         { Unop(Not, $2)          }
   | BNOT expr        { Unop(Bnot, $2)          }
   | ID ASSIGN expr   { Assign($1, $3)         }
   | LPAREN expr RPAREN { $2                   }
   /* call */
   | ID LPAREN args_opt RPAREN { Call ($1, $3)  }
-  | COMMAND expr COMMAND      { Cmd ($2)}
+  | COMMAND        { Cmd ($1)} 
 
 /* args_opt*/
 args_opt:
