@@ -75,10 +75,6 @@ fdecl:
     }
   }
 
-fdecl_list:
-  /* nothing */ { [] }
-  | fdecl fdecl_list  { $1::$2 }
-
 /* formals_opt */
 formals_opt:
   /*nothing*/ { [] }
