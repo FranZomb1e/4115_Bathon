@@ -85,20 +85,13 @@ rule tokenize = parse
 | "return"   { RETURN }
 (* Class *)
 | "class"    { CLASS } 
-(* Command *)
-| '`'        { command lexbuf } (* implementation of command could be wrong -> COMMAND *)
-
-(* | '\"' letter* '\"' as lxm { SLITERAL(remove_quotes lxm) } *)
 | digit+ as lxm { ILITERAL(int_of_string lxm) }
 | float as lxm  { FLITERAL(float_of_string lxm) }
 | ['a'-'z' 'A'-'Z' '_']['a'-'z' 'A'-'Z' '0'-'9' '_']*  as lxm { ID(lxm) }
+| '`' .*  '`' as lxm { COMMAND(lxm) }
 | eof     { EOF }
 | _ as char { raise (Failure("illegal character" ^ Char.escaped char)) } 
 
 and comment = parse
 | '\n' { tokenize lexbuf }
 | _    { comment lexbuf }
-
-and command = parse 
-| '`' { tokenize lexbuf }
-| _   { command lexbuf}
