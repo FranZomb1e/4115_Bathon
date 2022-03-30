@@ -8,7 +8,8 @@ let float = (digit+) '.' (digit+)
 
 
 rule tokenize = parse
- [' ' '\t' '\r' '\n'] { tokenize lexbuf }
+ [' ' '\t' '\r'] { tokenize lexbuf }
+| '\n'       { EOL }
 | "#"        { comment lexbuf }
 | "True"     { BLIT (true) }
 | "False"    { BLIT (false) }
