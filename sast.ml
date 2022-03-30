@@ -13,7 +13,7 @@ and sx =
   | SBinop of sexpr * op * sexpr
   | SUnop of uop * sexpr
   | SCall of string * sexpr list
-  | SCmd of sexpr (* TBD *)
+  | SCmd of string (* TBD *)
 
 type sstmt = 
     SBlock of sstmt list
@@ -21,7 +21,8 @@ type sstmt =
   | SIf of sexpr * sstmt * sstmt
   | SWhile of sexpr * sstmt
   | SFor of sexpr * sexpr * sstmt
-  | Return of sexpr
+  | SReturn of sexpr
+  | SEmpty
 
 type sfunc_def = {
   srtyp: typ;
@@ -38,15 +39,16 @@ let rec string_of_sexpr (t, e) =
         SAssign(v, e) -> v ^ " = " ^ string_of_sexpr e
       | SIntLit(l) -> string_of_int l
       | SBoolLit(true) -> "true"
-      | SBootLit(false) -> "false"
+      | SBoolLit(false) -> "false"
       | SStrLit(s) -> s
       | SFloatLit(f) -> string_of_float f
       | SId(s) -> s
       | SBinop(e1, o, e2) ->
-        string_of_sexpr e1 ^ " " ^ string_of_op o ^ " " string_of_sexpr e2
+        string_of_sexpr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_sexpr e2
       | SUnop(u, e) -> string_of_uop u ^ string_of_sexpr e
       | SCall(f, el) ->
-        f ^ "(" ^ String.concat "," (List.map string_of_sexpr el) ^ ")"    
+        f ^ "(" ^ String.concat "," (List.map string_of_sexpr el) ^ ")"
+      | SCmd(s) -> s
     ) ^ ")"
 
 let rec string_of_sstmt = function
@@ -59,6 +61,7 @@ let rec string_of_sstmt = function
   | SFor(e1, e2, s) -> "for (" ^ string_of_sexpr e1 ^ " in " ^ string_of_sexpr e2 ^ ")\n" ^
                       string_of_sstmt s
   | SReturn(expr) -> "return " ^ string_of_sexpr expr ^ "\n"
+  | SEmpty -> ""
 
 let string_of_sfdecl fedcl =
   "def " ^ fedcl.sfname ^ " : " ^ string_of_typ fedcl.srtyp ^ "(" ^ String.concat "," (List.map fst fedcl.sformals) ^

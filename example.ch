@@ -4,10 +4,12 @@ y : int
 
 def gcd : int (a : int, b : int) {
   while (a != b) {
-    if (b < a) a = a - b 
-    else b = b - a
-  }  
-
+    if (b < a) {
+      a = a - b
+    } else { 
+      b = b - a 
+    }
+  }
   return a
 }
 
@@ -19,4 +21,3 @@ print(gcd(x,y))
 print(gcd(3,15))
 print(gcd(99,121))
 print(gcd(a,b))
-

@@ -2,6 +2,10 @@
 
 %{
 open Ast
+
+let fst (a,_,_) = a;;
+let snd (_,b,_) = b;;
+let trd (_,_,c) = c;;
 %}
 
 %token COLON SEMI PERIOD UNDERSCORE LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET ASSIGN MATCH WITH LAMBDA
@@ -42,11 +46,16 @@ open Ast
 program:
   decls EOF { $1}
 
-decls: fdecl_list stmt_list {($1, $2)}
-   
+decls: 
+   /* nothing */  { ([], [], []) }
+  | decls vdecl   { (($2 :: fst $1), snd $1, trd $1) }
+  | decls fdecl   { (fst $1, ($2 :: snd $1), trd $1) }
+  | decls stmt    { (fst $1, snd $1, (trd $1 @ [$2])) }
+
+
 /* x:int */
 vdecl:
-  ID COLON typ { ($1, $3) }
+  ID COLON typ EOL { ($1, $3) }
 
 typ:
     INT   { Int   }
@@ -76,15 +85,16 @@ formals_opt:
   | formals_list { $1 }
 
 formals_list:
-  vdecl { [$1] }
-  | vdecl COMMA formals_list { $1::$3 }
+  ID COLON typ { [($1, $3)] }
+  | formals_list COMMA ID COLON typ { ($3, $5) :: $1 }
 
 stmt_list:
   /* nothing */ { [] }
-  | stmt stmt_list  { $1::$2 }
+  | stmt_list stmt  { $2 :: $1 }
 
 stmt:
-    expr EOL                                  { Expr $1      }
+    EOL  { Empty }
+  | expr EOL                                  { Expr $1      }
   | LBRACE stmt_list RBRACE                 { Block $2 }
   /* if (condition) { block1} else {block2} */
   /* if (condition) stmt else stmt */

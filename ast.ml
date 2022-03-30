@@ -41,6 +41,7 @@ type stmt =
   | While of expr * stmt (* while expr {stmt} *)
   | For of expr * expr * stmt (* for id in id {stmt} *)
   | Return of expr
+  | Empty
 
 type bind = string * typ (* In function definition, def foo(var : type) *)
 
@@ -113,6 +114,7 @@ let rec string_of_stmt = function
   | For(e1, e2, s) -> 
     "for " ^ string_of_expr e1 ^ " in " ^ string_of_expr e2 ^ " " ^ string_of_stmt s
   | Return(expr) -> "return " ^ string_of_expr expr ^ ";\n"
+  | Empty -> ""
 
 let string_of_vdecl (id, t) = id ^ " : " ^ string_of_typ t ^ "\n"
 
@@ -127,5 +129,3 @@ let string_of_program (vars, funcs, stmts) =
   String.concat "\n" (List.map string_of_vdecl vars) ^ "\n" ^
   String.concat "\n" (List.map string_of_fdecl funcs) ^ "\n" ^
   String.concat "\n" (List.map string_of_stmt stmts)
-
-
