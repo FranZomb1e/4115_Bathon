@@ -32,7 +32,7 @@ type expr =
   | Binop of expr * op * expr 
   | Unop of uop * expr
   | Call of string * expr list
-  | Cmd of expr (* variable support '$x' to be implemented *)
+  | Cmd of string (* variable support '$x' to be implemented *)
 
 type stmt = 
     Block of stmt list
@@ -101,7 +101,7 @@ let rec string_of_expr = function
   | Unop(u, e) -> string_of_uop u ^ string_of_expr e
   | Call(f, el) -> 
     f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
-  | Cmd(c) -> string_of_expr c
+  | Cmd(c) -> c
 
 let rec string_of_stmt = function     
     Block(stmts) ->

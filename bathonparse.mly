@@ -4,7 +4,7 @@
 open Ast
 %}
 
-%token COLON SEMI PERIOD UNDERSCORE COMMAND LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET ASSIGN MATCH WITH LAMBDA
+%token COLON SEMI PERIOD UNDERSCORE LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET ASSIGN MATCH WITH LAMBDA
 %token BAND BOR BXOR BLS BRS
 %token NEG NOT BNOT
 %token PLUS MINUS TIMES DIVIDE MOD FDIVIDE EXP
@@ -18,13 +18,13 @@ open Ast
 %token <string> SLITERAL
 %token <bool> BLIT
 %token <string> ID
+%token <string> COMMAND
 %token EOL
 %token EOF
 
 %start program
 %type <Ast.program> program
 
-%right COMMAND 
 %right ASSIGN MATCH WITH LAMBDA IN
 %left BAND BOR BXOR BLS BRS
 %right NEG NOT BNOT
@@ -128,7 +128,7 @@ expr:
   | LPAREN expr RPAREN { $2                   }
   /* call */
   | ID LPAREN args_opt RPAREN { Call ($1, $3)  }
-  | COMMAND        { Cmd ($1)} 
+  | COMMAND        { Cmd($1) } 
 
 /* args_opt*/
 args_opt:
