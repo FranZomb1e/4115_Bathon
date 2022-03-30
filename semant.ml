@@ -135,7 +135,7 @@ let check (functions, statements) =
         if List.length args != param_length then 
           raise (Failure ("expecting " ^ string_of_int param_length ^ 
                           " arguments in " ^ string_of_expr call))
-        else let check_call (_, _, ft) e =
+        else let check_call (_, ft) e =
           let (et, e') = check_expr e in
           let err = "illegal argument found " ^ string_of_type et ^
                     " expected " ^ string_of_typ ft ^ " in " ^ string_of_expr e
