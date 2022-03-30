@@ -104,10 +104,10 @@ let check (functions, statements) =
         if t1 = t2 then
           (* Determine expression type based on operator and operand types *)
           let t = match op with
-              Add | Sub | Mul | Div | Fdiv | Exp when t1 = Int -> Int 
-            | Add | Sub | Mul | Div | Fdiv | Exp when t1 = Float -> Float
+              Add | Sub | Mul | Div | Fdiv | Exp | Modulo  when t1 = Int -> Int 
+            | Add | Sub | Mul | Div | Fdiv | Exp | Modulo when t1 = Float -> Float
             | Band | Bor | Bxor | Ls | Rs when t1 = Int -> Int
-            | Equal | Neq | Leq | Geq -> Bool
+            | Equal | Neq | Leq | Geq | Less | Greater -> Bool
             | And | Or when t1 = Bool -> Bool
             | _ -> raise (Failure err)
           in
