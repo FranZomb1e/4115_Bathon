@@ -31,8 +31,8 @@ open Ast
 %left EQ NEQ
 %left GT LT GTE LTE
 %left PLUS MINUS
-%left TIMES DIVIDE FDIVIDE
-%left MOD EXP
+%left TIMES DIVIDE FDIVIDE MOD
+%left EXP
 %left BAND BOR BXOR BLS BRS
 
 %%
@@ -41,11 +41,8 @@ open Ast
 program:
   decls EOF { $1}
 
-decls:
-   /* nothing */ { ([], [])               }
- | stmt_list {([], $1)}
- | fdecl_list stmt_list {($1, $2)}
-
+decls: fdecl_list stmt_list {($1, $2)}
+   
 /* x:int */
 vdecl:
   ID COLON typ { ($1, $3) }
@@ -90,7 +87,7 @@ stmt:
   | LBRACE stmt_list RBRACE                 { Block $2 }
   /* if (condition) { block1} else {block2} */
   /* if (condition) stmt else stmt */
-  // | IF LPAREN expr RPAREN stmt ELIF LPAREN expr RPAREN stmt ELSE stmt    { IfElif($3, $5, $8, $10, $12) }
+  /* | IF LPAREN expr RPAREN stmt ELIF LPAREN expr RPAREN stmt ELSE stmt    { IfElif($3, $5, $8, $10, $12) } */
   | IF LPAREN expr RPAREN stmt ELSE stmt    { If($3, $5, $7) }
   | FOR LPAREN expr IN expr RPAREN stmt       { For($3, $5, $7)}
   | WHILE LPAREN expr RPAREN stmt           { While ($3, $5)  }
