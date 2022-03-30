@@ -141,7 +141,7 @@ let check (globals, funcs, stmts) =
         in let ot = match op with
             Neg when t = Float -> Float
           | Neg | Bnot when t = Int -> Int
-          | Bnot when t = Bool -> Bool
+          | Not when t = Bool -> Bool
           | _ -> raise (Failure err)
         in
         (sT1, (ot, SUnop(op, (t, e'))))
