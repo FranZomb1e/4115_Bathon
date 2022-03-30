@@ -51,7 +51,7 @@ type func_def = {
     body: stmt list;
 } (* def fname:rtyp(formals) {body} *)
 
-type program = func_def list * stmt list
+type program = bind list * func_def list * stmt list
 
 (* print functions *)
 
@@ -114,14 +114,17 @@ let rec string_of_stmt = function
     "for " ^ string_of_expr e1 ^ " in " ^ string_of_expr e2 ^ " " ^ string_of_stmt s
   | Return(expr) -> "return " ^ string_of_expr expr ^ ";\n"
 
+let string_of_vdecl (id, t) = id ^ " : " ^ string_of_typ t ^ "\n"
+
 let string_of_fdecl fdecl = 
   "def " ^ fdecl.fname ^ " : " ^ string_of_typ fdecl.rtyp ^ "(" ^ String.concat ", " (List.map fst fdecl.formals) ^
   ")\n{\n" ^
   String.concat "" (List.map string_of_stmt fdecl.body) ^
   "}\n"
 
-let string_of_program (funcs, stmts) =
+let string_of_program (vars, funcs, stmts) =
   "\n\nParsed program: \n\n" ^
+  String.concat "\n" (List.map string_of_vdecl vars) ^ "\n" ^
   String.concat "\n" (List.map string_of_fdecl funcs) ^ "\n" ^
   String.concat "\n" (List.map string_of_stmt stmts)
 

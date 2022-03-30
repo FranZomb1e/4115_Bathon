@@ -10,11 +10,21 @@ module StringMap = Map.Make(String)
 
    Check each function, then check each statement *)
 
-let check (functions, statements) =
+let check (globals, functions, statements) =
 
   (* TODO *)
   (* check binds *)
+  let check_binds (kind : string) (binds : (string * typ) list) =
+    let rec dups = function
+        [] -> ()
+      |	((n1,_) :: (n2,_) :: _) when n1 = n2 ->
+        raise (Failure ("duplicate " ^ kind ^ " " ^ n1))
+      | _ :: t -> dups t
+    in dups (List.sort (fun (a,_) (b,_) -> compare a b) binds)
+  in
 
+  (* Make sure no globals duplicate *)
+  check_binds "global" globals;
 
 
   (* Collect function declarations for built-in functions: no bodies
@@ -52,6 +62,8 @@ let check (functions, statements) =
 
   (* Functions check *)
   let check_func func = 
+    check_binds "formal" func.formals;
+
     (* Raise an exception if the given rvalue type cannot be assigned to
        the given lvalue type *)
     let check_assign lvaluet rvaluet err =
@@ -62,7 +74,7 @@ let check (functions, statements) =
     (* Revise needed *)
     (* Build local symbol table of variables for this function *)
     let symbols = List.fold_left (fun m (name, ty) -> StringMap.add name ty m)
-        StringMap.empty (func.formals)
+        StringMap.empty (globals @ func.formals)
     in
 
     (* TODO *)

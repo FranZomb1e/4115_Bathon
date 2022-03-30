@@ -1,4 +1,6 @@
 # The GCD algorithm in Bathon
+x : int
+y : int
 
 def gcd : int (a : int, b : int) {
   while (a != b) {
