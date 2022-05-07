@@ -49,7 +49,7 @@ program:
 decls: 
    /* nothing */  { ([], [], []) }
   | decls vdecl   { (($2 :: fst $1), snd $1, trd $1) }
-  | decls fdecl   { (fst $1, ($2 :: snd $1), trd $1) }
+  | decls fdecl   { (fst $1, (snd $1 @ [$2]), trd $1) }
   | decls stmt    { (fst $1, snd $1, (trd $1 @ [$2])) }
 
 
@@ -71,6 +71,7 @@ fdecl:
       fname=$2;
       rtyp=$4;
       formals=$6;
+      locals=[];
       body=$9;
     }
   }
@@ -82,11 +83,11 @@ formals_opt:
 
 formals_list:
   ID COLON typ { [($1, $3)] }
-  | formals_list COMMA ID COLON typ { ($3, $5) :: $1 }
+  | formals_list COMMA ID COLON typ { $1 @ [($3, $5)] }
 
 stmt_list:
   /* nothing */ { [] }
-  | stmt_list stmt  { $2 :: $1 }
+  | stmt_list stmt  { $1 @ [$2] }
 
 stmt:
     EOL  { Empty }

@@ -28,6 +28,7 @@ type sfunc_def = {
   srtyp: typ;
   sfname: string;
   sformals: bind list;
+  slocals: bind list;
   sbody: sstmt list;
 }
 
@@ -63,10 +64,10 @@ let rec string_of_sstmt = function
   | SReturn(expr) -> "return " ^ string_of_sexpr expr ^ "\n"
   | SEmpty -> ""
 
-let string_of_sfdecl fedcl =
-  "def " ^ fedcl.sfname ^ " : " ^ string_of_typ fedcl.srtyp ^ "(" ^ String.concat "," (List.map fst fedcl.sformals) ^
-  ")\n{\n" ^
-  String.concat "" (List.map string_of_sstmt fedcl.sbody) ^ 
+let string_of_sfdecl fdecl =
+  "def " ^ fdecl.sfname ^ " : " ^ string_of_typ fdecl.srtyp ^ "(" ^ String.concat ", " (List.map fst fdecl.sformals) ^
+  ")\n{\n" ^ "locals : " ^ String.concat ", " (List.map fst fdecl.slocals) ^ "\n" ^
+  String.concat "" (List.map string_of_sstmt fdecl.sbody) ^ 
   "}\n"
 
 let string_of_sprogram (vars, funcs, stmts) =

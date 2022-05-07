@@ -32,6 +32,7 @@ let check (globals, funcs, stmts) =
       rtyp = Int;
       fname = "print";
       formals = [("x", Int)];
+      locals = [];
       body = []
     } StringMap.empty
   in
@@ -53,6 +54,7 @@ let check (globals, funcs, stmts) =
       rtyp = Int;
       fname = "__main__";
       formals = [];
+      locals = [];
       body = stmts
     }
   in
@@ -226,11 +228,26 @@ let check (globals, funcs, stmts) =
                             string_of_typ func.rtyp ^ " in " ^ string_of_expr e))
       | Empty -> (sT, SEmpty)
     in
+
+    let check_res = check_stmt_list symbols func.body 
+    in
+
+    let slocals =
+      let finalST = fst check_res
+      in
+      let rec remove_formals sT (binds : (string * typ) list) =
+        match binds with
+        | [] -> sT
+        | (n, p) :: bl -> remove_formals (StringMap.remove n sT) bl
+      in
+      StringMap.bindings (remove_formals finalST (StringMap.bindings symbols))
+    in
     {
       srtyp = func.rtyp;
       sfname = func.fname;
       sformals = func.formals;
-      sbody = snd (check_stmt_list symbols func.body);
+      slocals = slocals;
+      sbody = snd check_res;
     }
   in
 
@@ -238,4 +255,4 @@ let check (globals, funcs, stmts) =
   in
   let main = List.hd sasts
   in
-  (globals, List.tl sasts, main.sbody)
+  (globals, sasts, main.sbody)
