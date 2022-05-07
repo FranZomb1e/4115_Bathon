@@ -32,7 +32,6 @@ let check (globals, funcs, stmts) =
       rtyp = Int;
       fname = "print";
       formals = [("x", Int)];
-      locals = [];
       body = []
     } StringMap.empty
   in
@@ -54,7 +53,6 @@ let check (globals, funcs, stmts) =
       rtyp = Int;
       fname = "__main__";
       formals = [];
-      locals = [];
       body = stmts
     }
   in
@@ -255,4 +253,4 @@ let check (globals, funcs, stmts) =
   in
   let main = List.hd sasts
   in
-  (globals, sasts, main.sbody)
+  (globals, sasts, main)
