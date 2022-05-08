@@ -32,7 +32,7 @@ type sfunc_def = {
   sbody: sstmt list;
 }
 
-type sprogram = bind list * sfunc_def list * sstmt list
+type sprogram = bind list * sfunc_def list * sfunc_def
 
 (* print functions *)
 let rec string_of_sexpr (t, e) =
