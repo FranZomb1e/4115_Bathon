@@ -21,6 +21,7 @@ type uop = Neg | Not | Bnot
 
 
 type typ = Int | Bool | Str | Float
+         | List of typ
 
 type expr = 
     Assign of string * expr
@@ -33,6 +34,8 @@ type expr =
   | Unop of uop * expr
   | Call of string * expr list
   | Cmd of string (* variable support '$x' to be implemented *)
+  | Access of string * expr
+  | AccessAssign of string * expr * expr
 
 type stmt = 
     Block of stmt list
@@ -83,11 +86,12 @@ let string_of_uop = function
   | Not -> "not"
   | Bnot -> "~"
 
-let string_of_typ = function
+let rec string_of_typ = function
     Int -> "int"
   | Bool -> "bool"
   | Float -> "float"
   | Str -> "string"
+  | List(t) -> string_of_typ t ^ "[]"
 
 let rec string_of_expr = function
     Assign(v, e) -> v ^ " = " ^ string_of_expr e
@@ -103,6 +107,8 @@ let rec string_of_expr = function
   | Call(f, el) -> 
     f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
   | Cmd(c) -> c
+  | Access(e, i) -> e ^ "[" ^ string_of_expr i ^ "]"
+  | AccessAssign(v, i, e) -> v ^ "[" ^ string_of_expr i ^ "]" ^ " = " ^ string_of_expr e
 
 let rec string_of_stmt = function     
     Block(stmts) ->

@@ -14,6 +14,8 @@ and sx =
   | SUnop of uop * sexpr
   | SCall of string * sexpr list
   | SCmd of string (* TBD *)
+  | SAccess of string * sexpr
+  | SAccessAssign of string * sexpr * sexpr
 
 type sstmt = 
     SBlock of sstmt list
@@ -50,6 +52,8 @@ let rec string_of_sexpr (t, e) =
       | SCall(f, el) ->
         f ^ "(" ^ String.concat "," (List.map string_of_sexpr el) ^ ")"
       | SCmd(s) -> s
+      | SAccess(e, i) -> e ^ "[" ^ string_of_sexpr i ^ "]"
+      | SAccessAssign(v, i, e) -> v ^ "[" ^ string_of_sexpr i ^ "]" ^ " = " ^ string_of_sexpr e
     ) ^ ")"
 
 let rec string_of_sstmt = function

@@ -177,6 +177,25 @@ let check (globals, funcs, stmts) =
           let (sT1, args') = check_call sT fd.formals args
           in (sT1, (fd.rtyp, SCall(fname, args')))
       | Cmd(content) -> (sT, (Str, SCmd(content)))
+      | Access(id, e2) ->
+        let (sT1, (t2, e2')) = check_expr sT e2 in
+        let t1 = type_of_identifier sT1 id in
+        (match t1 with
+        | List(t) when t2 = Int -> (sT1, (t, SAccess(id, (t2, e2'))))
+        | List(_) -> raise (Failure ("integer required for list access, but get type: " ^ string_of_typ t2))
+        | _ -> raise(Failure ("list access not valid for type: " ^ string_of_typ t1))
+        )
+      | AccessAssign(id, e2, e3) ->
+        let (sT1, (t2, e2')) = check_expr sT e2 in
+        let (sT2, (t3, e3')) = check_expr sT1 e3 in
+        let t1 = type_of_identifier sT2 id in
+        (match t1 with
+        | List(t) when t = t3 ->
+            if t2 = Int then (sT2, (t3, SAccessAssign(id, (t2, e2'), (t3, e3'))))
+            else raise (Failure ("integer required for list access, but get type: " ^ string_of_typ t2))
+        | List(t) -> raise (Failure ("type: " ^ string_of_typ t3 ^ " is inconsistent with the list type: " ^ string_of_typ t))
+        | _ -> raise(Failure ("list access assign not valid for type: " ^ string_of_typ t1))
+        )
     in
 
     let check_bool_expr sT e = 

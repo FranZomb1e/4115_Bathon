@@ -15,6 +15,7 @@ let trd (_,_,c) = c;;
 %token EQ NEQ GT LT GEQ LEQ AND OR IN
 %token IF ELIF ELSE FOR WHILE TRY EXCEPT ASSERT RAISING CONTINUE BREAK PASS 
 %token INT FLOAT BOOL STR LIST TUPLE RANGE DICT SET NONE
+%token LBRACKET RBRACKET
 /* return, COMMA token */
 %token DEF RETURN COMMA CLASS
 %token <int> ILITERAL
@@ -62,6 +63,7 @@ typ:
   | BOOL  { Bool  }
   | FLOAT { Float }
   | STR   { Str }
+  | typ LBRACKET RBRACKET { List($1) }
 
 /* fdecl */
 fdecl:
@@ -135,6 +137,8 @@ expr:
   /* call */
   | ID LPAREN args_opt RPAREN { Call ($1, $3)  }
   | COMMAND        { Cmd($1) } 
+  | ID LBRACKET expr RBRACKET  { Access($1, $3) }
+  | ID LBRACKET expr RBRACKET ASSIGN expr  { AccessAssign($1, $3, $6) }
 
 /* args_opt*/
 args_opt:
