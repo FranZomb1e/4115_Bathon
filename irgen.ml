@@ -43,7 +43,7 @@ let translate (globals, functions) =
     let function_decl m fdecl =
       let name = fdecl.sfname
       and formal_types =
-        Array.of_list (List.map (fun (t,_) -> ltype_of_typ t) fdecl.sformals)
+        Array.of_list (List.map (fun (_, t) -> ltype_of_typ t) fdecl.sformals)
       in let ftype = L.function_type (ltype_of_typ fdecl.srtyp) formal_types in
       StringMap.add name (L.define_function name ftype the_module, fdecl) m in
     List.fold_left function_decl StringMap.empty functions in
@@ -59,7 +59,7 @@ let translate (globals, functions) =
        declared variables.  Allocate each on the stack, initialize their
        value, if appropriate, and remember their values in the "locals" map *)
     let local_vars =
-      let add_formal m (t, n) p =
+      let add_formal m (n, t) p =
         L.set_value_name n p;
         let local = L.build_alloca (ltype_of_typ t) n builder in
         ignore (L.build_store p local builder);
@@ -67,7 +67,7 @@ let translate (globals, functions) =
 
       (* Allocate space for any locally declared variables and add the
        * resulting registers to our map *)
-      and add_local m (t, n) =
+      and add_local m (n, t) =
         let local_var = L.build_alloca (ltype_of_typ t) n builder
         in StringMap.add n local_var m
       in
@@ -85,7 +85,7 @@ let translate (globals, functions) =
 
     (* Construct code for an expression; return its value *)
     let rec build_expr builder ((_, e) : sexpr) = match e with
-        SLiteral i  -> L.const_int i32_t i
+        SIntLit i  -> L.const_int i32_t i
       | SBoolLit b  -> L.const_int i1_t (if b then 1 else 0)
       | SId s       -> L.build_load (lookup s) s builder
       | SAssign (s, e) -> let e' = build_expr builder e in
