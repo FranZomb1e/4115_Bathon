@@ -34,7 +34,7 @@ type sfunc_def = {
   sbody: sstmt list;
 }
 
-type sprogram = bind list * sfunc_def list * sfunc_def
+type sprogram = bind list * sfunc_def list
 
 (* print functions *)
 let rec string_of_sexpr (t, e) =
@@ -74,8 +74,7 @@ let string_of_sfdecl fdecl =
   String.concat "" (List.map string_of_sstmt fdecl.sbody) ^ 
   "}\n"
 
-let string_of_sprogram (vars, funcs, main) =
+let string_of_sprogram (vars, funcs) =
   "\n\nSementically checked program: \n\n" ^
   String.concat "\n" (List.map string_of_vdecl vars) ^ "\n" ^
-  String.concat "\n" (List.map string_of_sfdecl funcs) ^ "\n" ^
-  string_of_sfdecl main
+  String.concat "\n" (List.map string_of_sfdecl funcs) ^ "\n"

@@ -51,13 +51,13 @@ let check (globals, funcs, stmts) =
   (* Collect all function names into one symbol table *)
   let main_func = {
       rtyp = Int;
-      fname = "__main__";
+      fname = "main";
       formals = [];
       body = stmts
     }
   in
 
-  let functions = main_func :: funcs
+  let functions = funcs @ [main_func]
   in
 
   let function_decls = List.fold_left add_func built_in_decls functions
@@ -270,6 +270,4 @@ let check (globals, funcs, stmts) =
 
   let sasts = List.map check_func functions
   in
-  let main = List.hd sasts
-  in
-  (globals, sasts, main)
+  (globals, sasts)
