@@ -122,6 +122,7 @@ let translate (globals, functions) =
          | A.Bxor    -> L.build_xor
          | A.Ls      -> L.build_shl
          | A.Rs      -> L.build_ashr
+         | A.Modulo  -> L.build_srem
          
         ) e1' e2' "tmp" builder
       | SCall ("print", [e]) ->
