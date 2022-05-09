@@ -6,8 +6,9 @@
 
 # List all the files in the current directory
 ls_res = `ls`
-for file in ls_res.split("\n"):
+for file in ls_res.split("\n") {
     print(file)
+}
 
 if ($# > 2) {
     print("The number of arguments is less than two")
@@ -19,7 +20,7 @@ if ($# > 2) {
 x = 1
 print(x)                           # 1
 print("x variable is equal to $x") # x variable is equal to 1
-print("$x1")                       # Error
+# print("$x1")                       # Error
 print("$x ")                       # 1<whitespace>
 print("${x}1")                     # 11
 print("\$x")                       # $x
