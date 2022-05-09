@@ -16,13 +16,15 @@ let translate (globals, functions) =
   let i32_t      = L.i32_type     context
   and i8_t       = L.i8_type      context
   and i1_t       = L.i1_type      context 
-  and float_t    = L.double_type  context in
+  and float_t    = L.double_type  context 
+  and str_t      = L.pointer_type i8_t in
 
   (* Return the LLVM type for a Bathon type *)
   let ltype_of_typ = function
       A.Int    -> i32_t
     | A.Bool   -> i1_t
     | A.Float  -> float_t
+    | A.String -> str_t
   in
 
   (* Create a map of global variables after creating each *)
@@ -87,20 +89,40 @@ let translate (globals, functions) =
     let rec build_expr builder ((_, e) : sexpr) = match e with
         SIntLit i  -> L.const_int i32_t i
       | SBoolLit b  -> L.const_int i1_t (if b then 1 else 0)
+      | SStrLit str -> L.build_global_stringptr str "tmp" builder
+      | SFloatLit f -> L.const_float float_t f
       | SId s       -> L.build_load (lookup s) s builder
       | SAssign (s, e) -> let e' = build_expr builder e in
         ignore(L.build_store e' (lookup s) builder); e'
+      | SUnop(u, e) ->
+        let e' = build_expr builder e in
+        (match u with
+            A.Neg   -> L.build_neg
+          | A.Not   -> L.build_not
+          | A.BNot  -> L.build_not
+        ) e' "tmp" builder
       | SBinop (e1, op, e2) ->
         let e1' = build_expr builder e1
         and e2' = build_expr builder e2 in
         (match op with
            A.Add     -> L.build_add
          | A.Sub     -> L.build_sub
+         | A.Mul     -> L.build_mul
+         | A.Div     -> L.build_sdiv
+         | A.Equal   -> L.build_icmp L.Icmp.Eq
+         | A.Leq     -> L.build_icmp L.Icmp.Sle
+         | A.Geq     -> L.build_icmp L.Icmp.Sge
+         | A.Greater -> L.build_icmp L.Icmp.Sgt
+         | A.Less    -> L.build_icmp L.Icmp.Slt
+         | A.Neq     -> L.build_icmp L.Icmp.Ne
          | A.And     -> L.build_and
          | A.Or      -> L.build_or
-         | A.Equal   -> L.build_icmp L.Icmp.Eq
-         | A.Neq     -> L.build_icmp L.Icmp.Ne
-         | A.Less    -> L.build_icmp L.Icmp.Slt
+         | A.Band    -> L.build_and
+         | A.Bor     -> L.build_or
+         | A.Bxor    -> L.build_xor
+         | A.Ls      -> L.build_shl
+         | A.Rs      -> L.build_ashr
+         
         ) e1' e2' "tmp" builder
       | SCall ("print", [e]) ->
         L.build_call printf_func [| int_format_str ; (build_expr builder e) |]
