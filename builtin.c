@@ -101,7 +101,7 @@ int append_float(struct list *inlist, float flt)
     return 0;
 }
 
-void *access(struct list *inlist, int index)
+void *access_helper(struct list *inlist, int index)
 {
     return inlist->data[index];
 }
@@ -114,7 +114,7 @@ int access_int(struct list *inlist, int index)
         return 0;
     }
 
-    int *num = (int *)access(inlist, index);
+    int *num = (int *)access_helper(inlist, index);
     if (num == NULL)
     {
         printf("Illegal index accessed\n");
@@ -131,7 +131,7 @@ char access_char(struct list *inlist, int index)
         return 0;
     }
 
-    char *chr = (char *)access(inlist, index);
+    char *chr = (char *)access_helper(inlist, index);
     if (chr == NULL)
     {
         printf("Illegal index accessed\n");
@@ -148,7 +148,7 @@ float access_float(struct list *inlist, int index)
         return 0;
     }
 
-    float *flt = (float *)access(inlist, index);
+    float *flt = (float *)access_helper(inlist, index);
     if (flt == NULL)
     {
         printf("Illegal index accessed\n");
@@ -165,7 +165,7 @@ char *access_str(struct list *inlist, int index)
         return 0;
     }
 
-    char *str = (char *)access(inlist, index);
+    char *str = (char *)access_helper(inlist, index);
     if (str == NULL)
     {
         printf("Illegal index accessed\n");
