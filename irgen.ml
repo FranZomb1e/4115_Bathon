@@ -18,6 +18,7 @@ let translate (globals, functions) =
   let i32_t      = L.i32_type     context
   and i8_t       = L.i8_type      context
   and i1_t       = L.i1_type      context 
+  and double_t   = L.double_type  context
   and float_t    = L.float_type   context in 
   let str_t      = L.pointer_type i8_t in
 
@@ -151,7 +152,6 @@ let translate (globals, functions) =
     let (the_function, _) = StringMap.find fdecl.sfname function_decls in
     let builder = L.builder_at_end context (L.entry_block the_function) in
 
-    let int_format_str = L.build_global_stringptr "%d\n" "fmt" builder in
 
     (* Construct the function's "locals": formal arguments and locally
        declared variables.  Allocate each on the stack, initialize their
@@ -180,6 +180,10 @@ let translate (globals, functions) =
     let lookup n = try StringMap.find n local_vars
       with Not_found -> StringMap.find n global_vars
     in
+
+    let int_format_str = L.build_global_stringptr "%d\n" "fmt" builder
+    and float_format_str = L.build_global_stringptr "%g\n" "fmt" builder
+    and str_format_str = L.build_global_stringptr "%s\n" "fmt" builder in
 
     let rec get_typ_string e_typ =
       match e_typ with
@@ -269,9 +273,21 @@ let translate (globals, functions) =
             | _ -> raise(Error "access assign type not supported")
           in
           L.build_call assign_func [| li; idx; value |] "assign_typ" builder
-      | SCall ("print", [e]) ->
-        L.build_call printf_func [| int_format_str ; (build_expr builder e) |]
-          "printf" builder
+      | SCall ("print", [ ((t, v) as e) ]) ->
+        let print_value = 
+          match t with
+            A.Float -> L.build_fpext (build_expr builder e) double_t "ext" builder
+          | _ -> build_expr builder e
+        in
+        let format_str = 
+          match t with
+            A.Int -> int_format_str
+          | A.Float -> float_format_str
+          | A.Bool -> int_format_str
+          | A.Str -> str_format_str
+          | _ -> raise(Error "print type format not supported")
+        in
+        L.build_call printf_func [| format_str ; print_value |] "printf" builder
       | SCall ("append", e_list) -> 
         let (typ, sx) as li_e = List.hd e_list in
         let p_e = List.nth e_list 1 in
@@ -310,6 +326,8 @@ let translate (globals, functions) =
         let llargs = List.rev (List.map (build_expr builder) (List.rev args)) in
         let result = f ^ "_result" in
         L.build_call fdef (Array.of_list llargs) result builder
+      | _ -> let err = "unmatch: " ^ string_of_sexpr (e_t, e) in 
+      raise(Error err)
     in
 
     (* LLVM insists each basic block end with exactly one "terminator"

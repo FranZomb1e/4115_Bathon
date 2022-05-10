@@ -90,7 +90,7 @@ let rec string_of_typ = function
     Int -> "int"
   | Bool -> "bool"
   | Float -> "float"
-  | Str -> "string"
+  | Str -> "str"
   | List(t) -> string_of_typ t ^ "[]"
 
 let rec string_of_expr = function

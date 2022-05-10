@@ -49,6 +49,18 @@ let check (globals, funcs, stmts) =
       formals = [("x", Str)];
       body = []
     } m in
+    let m = StringMap.add "print (float)" {
+      rtyp = Int;
+      fname = "print";
+      formals = [("x", Float)];
+      body = []
+    } m in
+    let m = StringMap.add "print (bool)" {
+      rtyp = Int;
+      fname = "print";
+      formals = [("x", Bool)];
+      body = []
+    } m in
     let params = [ ("x", List(Int)); ("y", Int) ] in
     let key = key_func "append" params in
     let m = StringMap.add key {

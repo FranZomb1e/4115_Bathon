@@ -43,31 +43,15 @@ void realloc_check(struct list *inlist)
 
 int append_str(struct list *inlist, char *str)
 {
-    if (strcmp(inlist->type, "string"))
+    if (strcmp(inlist->type, "str"))
     {
-        printf("Can only append %s, not string\n", inlist->type);
+        printf("Can only append %s, not str\n", inlist->type);
         return -1;
     }
 
     realloc_check(inlist);
     char *toadd = malloc(strlen(str));
     strcpy(toadd, str);
-    inlist->data[(inlist->size)] = toadd;
-    inlist->size = inlist->size + 1;
-    return 0;
-}
-
-int append_char(struct list *inlist, char chr)
-{
-    if (strcmp(inlist->type, "char"))
-    {
-        printf("Can only append %s, not char\n", inlist->type);
-        return -1;
-    }
-
-    realloc_check(inlist);
-    char *toadd = malloc(1);
-    *toadd = chr;
     inlist->data[(inlist->size)] = toadd;
     inlist->size = inlist->size + 1;
     return 0;
@@ -127,22 +111,6 @@ int access_int(struct list *inlist, int index)
     return *num;
 }
 
-char access_char(struct list *inlist, int index)
-{
-    if (strcmp(inlist->type, "char"))
-    {
-        printf("Can only access %s, not char\n", inlist->type);
-        return 0;
-    }
-
-    char *chr = (char *)access_helper(inlist, index);
-    if (chr == NULL)
-    {
-        printf("Illegal index accessed\n");
-        return 0;
-    }
-    return *chr;
-}
 
 float access_float(struct list *inlist, int index)
 {
@@ -163,9 +131,9 @@ float access_float(struct list *inlist, int index)
 
 char *access_str(struct list *inlist, int index)
 {
-    if (strcmp(inlist->type, "string"))
+    if (strcmp(inlist->type, "str"))
     {
-        printf("Can only access %s, not string\n", inlist->type);
+        printf("Can only access %s, not str\n", inlist->type);
         return 0;
     }
 
@@ -197,25 +165,6 @@ int assign_int(struct list *inlist, int index, int toAssign)
     return toAssign;
 }
 
-char assign_char(struct list *inlist, int index, char toAssign)
-{
-    if (strcmp(inlist->type, "char"))
-    {
-        printf("Can only access %s, not char\n", inlist->type);
-        return 0;
-    }
-
-    if (index >= inlist->size || index < 0)
-    {
-        printf("Illegal index accessed\n");
-        return 0;
-    }
-
-    *((char *)inlist->data[index]) = toAssign;
-
-    return toAssign;
-}
-
 float assign_float(struct list *inlist, int index, float toAssign)
 {
     if (strcmp(inlist->type, "float"))
@@ -237,9 +186,9 @@ float assign_float(struct list *inlist, int index, float toAssign)
 
 char *assign_str(struct list *inlist, int index, char *toAssign)
 {
-    if (strcmp(inlist->type, "string"))
+    if (strcmp(inlist->type, "str"))
     {
-        printf("Can only access %s, not string\n", inlist->type);
+        printf("Can only access %s, not str\n", inlist->type);
         return 0;
     }
 
