@@ -106,7 +106,7 @@ let rec string_of_expr = function
   | Unop(u, e) -> string_of_uop u ^ string_of_expr e
   | Call(f, el) -> 
     f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
-  | Cmd(c) -> c
+  | Cmd(c) -> "Command:" ^ c
   | Access(e, i) -> e ^ "[" ^ string_of_expr i ^ "]"
   | AccessAssign(v, i, e) -> v ^ "[" ^ string_of_expr i ^ "]" ^ " = " ^ string_of_expr e
 

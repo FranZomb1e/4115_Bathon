@@ -13,7 +13,7 @@ and sx =
   | SBinop of sexpr * op * sexpr
   | SUnop of uop * sexpr
   | SCall of string * sexpr list
-  | SCmd of string (* TBD *)
+  | SCmd of string
   | SAccess of string * sexpr
   | SAccessAssign of string * sexpr * sexpr
 
@@ -51,7 +51,7 @@ let rec string_of_sexpr (t, e) =
       | SUnop(u, e) -> string_of_uop u ^ string_of_sexpr e
       | SCall(f, el) ->
         f ^ "(" ^ String.concat "," (List.map string_of_sexpr el) ^ ")"
-      | SCmd(s) -> s
+      | SCmd(s) -> "Command: " ^ s
       | SAccess(e, i) -> e ^ "[" ^ string_of_sexpr i ^ "]"
       | SAccessAssign(v, i, e) -> v ^ "[" ^ string_of_sexpr i ^ "]" ^ " = " ^ string_of_sexpr e
     ) ^ ")"

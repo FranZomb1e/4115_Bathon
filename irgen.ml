@@ -27,6 +27,7 @@ let translate (globals, functions) =
     | A.Bool   -> i1_t
     | A.Float  -> float_t
     | A.Str -> str_t
+    | _ -> i32_t
   in
 
   (* List type *)
@@ -70,6 +71,11 @@ let translate (globals, functions) =
     L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
   let printf_func : L.llvalue =
     L.declare_function "printf" printf_t the_module in
+  
+  let exec_t : L.lltype =
+    L.var_arg_function_type (L.pointer_type i8_t) [| L.pointer_type i8_t |] in
+  let exec_func : L.llvalue =
+    L.declare_function "exec" exec_t the_module in
   
   (* Create an empty list given a type *)
   let create_list_t : L.lltype =
@@ -186,7 +192,10 @@ let translate (globals, functions) =
 
     (* Construct code for an expression; return its value *)
     let rec build_expr builder ((e_t, e) : sexpr) = match e with
-        SIntLit i  -> L.const_int i32_t i
+        SCmd command -> 
+        let command_ll = L.build_global_stringptr command "command" builder in
+        L.build_call exec_func [| command_ll |] "exec" builder
+      | SIntLit i  -> L.const_int i32_t i
       | SBoolLit b  -> L.const_int i1_t (if b then 1 else 0)
       | SStrLit str -> L.build_global_stringptr str "tmp" builder
       | SFloatLit f -> L.const_float float_t f

@@ -43,6 +43,12 @@ let check (globals, funcs, stmts) =
       formals = [("x", Int)];
       body = []
     } StringMap.empty in
+    let m = StringMap.add "print (str)" {
+      rtyp = Int;
+      fname = "print";
+      formals = [("x", Str)];
+      body = []
+    } m in
     let params = [ ("x", List(Int)); ("y", Int) ] in
     let key = key_func "append" params in
     let m = StringMap.add key {
@@ -67,10 +73,18 @@ let check (globals, funcs, stmts) =
       formals = params;
       body = []
     } m in
+    let params = [ ("Command", Str) ] in
+    let key = key_func "exec" params in
+    let m = StringMap.add key {
+      rtyp = Str;
+      fname = "exec";
+      formals = params;
+      body = []
+    } m in
     m
   in
 
-  let illegal_func_names = ["print"; "int"; "float"; "bool"; "str"; "append"] in
+  let illegal_func_names = ["print"; "int"; "float"; "bool"; "str"; "append"; "exec"] in
   (* Add function name to symbol table *)
   let add_func map fd =
     let built_in_err = "function " ^ fd.fname ^ " is a built-in function"

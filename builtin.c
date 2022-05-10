@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include <unistd.h>
+
+char cmd_res[4096];
+#define die(e) do { fprintf(stderr, "%s\n", e); exit(EXIT_FAILURE); } while (0);
 
 struct list
 {
@@ -248,4 +252,37 @@ char *assign_str(struct list *inlist, int index, char *toAssign)
     inlist->data[index] = toAssign;
 
     return toAssign;
+}
+
+// Command
+
+char* exec(char *command) {
+  int link[2];
+  pid_t pid;
+  
+  memset(cmd_res, 0, sizeof(cmd_res));
+
+  if (pipe(link)==-1)
+    die("pipe");
+
+  if ((pid = fork()) == -1)
+    die("fork");
+
+  if(pid == 0) {
+
+    dup2 (link[1], STDOUT_FILENO);
+    close(link[0]);
+    close(link[1]);
+    system(command);
+    exit(0);
+
+  } else {
+
+    close(link[1]);
+    int nbytes = read(link[0], cmd_res, sizeof(cmd_res));
+    printf("%.*s", nbytes, cmd_res);
+    wait(NULL);
+
+  }
+  return cmd_res;
 }
