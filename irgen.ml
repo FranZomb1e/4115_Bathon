@@ -293,7 +293,7 @@ let translate (globals, functions) =
           raise(Error "list type is inconsistent with that of the append value")
         else
           let p = build_expr builder p_e in
-          match sx with
+          (match sx with
           | SId(s) ->
             let found = Hashtbl.mem list_hashtb s in
             if found = false then
@@ -306,7 +306,7 @@ let translate (globals, functions) =
                   let typ_string = (get_typ_string typ) in
                   let typ_string_ptr = build_expr builder (A.Str, SStrLit(typ_string)) in
                   (* create an empty list llvalue *)
-                  L.build_call create_list_func [| typ_string_ptr |] "create_list" builder;
+                  L.build_call create_list_func [| typ_string_ptr |] "create_list" builder
                 else build_expr builder li_e
               in
               let _ = ignore(L.build_store li_llvalue (lookup s) builder) in
@@ -318,14 +318,12 @@ let translate (globals, functions) =
                 | _ -> raise(Error "append parameter type not supported")
               in
               L.build_call append_func [| li_llvalue; p |] "" builder
-            |_ -> raise(Error "unexpected error")
+          | _ -> raise(Error "unexpected error"))
       | SCall (f, args) ->
         let (fdef, fdecl) = StringMap.find f function_decls in
         let llargs = List.rev (List.map (build_expr builder) (List.rev args)) in
         let result = f ^ "_result" in
         L.build_call fdef (Array.of_list llargs) result builder
-      | _ -> let err = "unmatch: " ^ string_of_sexpr (e_t, e) in 
-      raise(Error err)
     in
 
     (* LLVM insists each basic block end with exactly one "terminator"
