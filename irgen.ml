@@ -54,9 +54,6 @@ let translate (globals, functions) =
     | A.Float ->
       L.const_float (ltype_of_typ t) 0.0
     | A.Str -> L.const_pointer_null (ltype_of_typ t)
-    | _ -> 
-      let s = "type: " ^ A.string_of_typ t ^ " initialization not supported" in
-      raise (Error s) 
   in
 
   (* Create a map of global variables after creating each *)
@@ -196,7 +193,7 @@ let translate (globals, functions) =
 
     (* Construct code for an expression; return its value *)
     let rec build_expr builder ((e_t, e) : sexpr) = match e with
-        SCmd command -> 
+      | SCmd command -> 
         let command_ll = L.build_global_stringptr command "command" builder in
         L.build_call exec_func [| command_ll |] "exec" builder
       | SIntLit i  -> L.const_int i32_t i
@@ -235,6 +232,7 @@ let translate (globals, functions) =
          | A.Ls      -> L.build_shl
          | A.Rs      -> L.build_ashr
          | A.Modulo  -> L.build_srem
+         | _ -> raise(Error "Unreachable")
          
         ) e1' e2' "tmp" builder
       | SAccess (s, e) ->
@@ -377,6 +375,7 @@ let translate (globals, functions) =
 
         ignore(L.build_cond_br bool_val body_bb end_bb while_builder);
         L.builder_at_end context end_bb
+      | _ -> raise(Error "Unreachable")
 
     in
     (* Build the code for each statement in the function *)
