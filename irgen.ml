@@ -265,7 +265,6 @@ let translate (globals, functions) =
           let assign_func =
             match e_t with
               A.Int -> assign_int_func
-            (* | A.Char -> assign_char_func *)
             | A.Float -> assign_float_func
             | A.Str -> assign_str_func
             | _ -> raise(Error "access assign type not supported")
