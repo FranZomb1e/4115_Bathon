@@ -37,12 +37,12 @@ void realloc_check(struct list *inlist)
     }
 }
 
-void append_str(struct list *inlist, char *str)
+int append_str(struct list *inlist, char *str)
 {
     if (strcmp(inlist->type, "string"))
     {
         printf("Can only append %s, not string\n", inlist->type);
-        return;
+        return -1;
     }
 
     realloc_check(inlist);
@@ -50,14 +50,15 @@ void append_str(struct list *inlist, char *str)
     strcpy(toadd, str);
     inlist->data[(inlist->size)] = toadd;
     inlist->size = inlist->size + 1;
+    return 0;
 }
 
-void append_char(struct list *inlist, char chr)
+int append_char(struct list *inlist, char chr)
 {
     if (strcmp(inlist->type, "char"))
     {
         printf("Can only append %s, not char\n", inlist->type);
-        return;
+        return -1;
     }
 
     realloc_check(inlist);
@@ -65,14 +66,15 @@ void append_char(struct list *inlist, char chr)
     *toadd = chr;
     inlist->data[(inlist->size)] = toadd;
     inlist->size = inlist->size + 1;
+    return 0;
 }
 
-void append_int(struct list *inlist, int num)
+int append_int(struct list *inlist, int num)
 {
     if (strcmp(inlist->type, "int"))
     {
         printf("Can only append %s, not int\n", inlist->type);
-        return;
+        return -1;
     }
 
     realloc_check(inlist);
@@ -80,14 +82,15 @@ void append_int(struct list *inlist, int num)
     *toadd = num;
     inlist->data[(inlist->size)] = toadd;
     inlist->size = inlist->size + 1;
+    return 0;
 }
 
-void append_float(struct list *inlist, float flt)
+int append_float(struct list *inlist, float flt)
 {
     if (strcmp(inlist->type, "float"))
     {
         printf("Can only append %s, not float\n", inlist->type);
-        return;
+        return -1;
     }
 
     realloc_check(inlist);
@@ -95,6 +98,7 @@ void append_float(struct list *inlist, float flt)
     *toadd = flt;
     inlist->data[(inlist->size)] = toadd;
     inlist->size = inlist->size + 1;
+    return 0;
 }
 
 void *access(struct list *inlist, int index)

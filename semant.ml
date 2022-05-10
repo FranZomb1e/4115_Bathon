@@ -27,25 +27,60 @@ let check (globals, funcs, stmts) =
 
   (* Collect function declarations for built-in functions: no bodies
      current version with print function where output is only "Hello World" *)
+  let rec string_of_params params =
+    match params with
+      (_, typ) :: [] -> string_of_typ typ
+    | (_, typ) :: p -> string_of_typ typ ^ ", " ^ string_of_params p
+    | _ -> "" 
+  in 
+  
+  let key_func name params = name ^ " (" ^ string_of_params params ^ ")" in
+  
   let built_in_decls =
-    StringMap.add "print" {
+    let m = StringMap.add "print (int)" {
       rtyp = Int;
       fname = "print";
       formals = [("x", Int)];
       body = []
-    } StringMap.empty
+    } StringMap.empty in
+    let params = [ ("x", List(Int)); ("y", Int) ] in
+    let key = key_func "append" params in
+    let m = StringMap.add key {
+      rtyp = Int;
+      fname = "append";
+      formals = params;
+      body = []
+    } m in
+    let params = [ ("x", List(Float)); ("y", Float) ] in
+    let key = key_func "append" params in
+    let m = StringMap.add key {
+      rtyp = Int;
+      fname = "append";
+      formals = params;
+      body = []
+    } m in
+    let params = [ ("x", List(Str)); ("y", Str) ] in
+    let key = key_func "append" params in
+    let m = StringMap.add key {
+      rtyp = Int;
+      fname = "append";
+      formals = params;
+      body = []
+    } m in
+    m
   in
 
+  let illegal_func_names = ["print"; "int"; "float"; "bool"; "str"; "append"] in
   (* Add function name to symbol table *)
   let add_func map fd =
-    let built_in_err = "function " ^ fd.fname ^ " may not be defined"
+    let built_in_err = "function " ^ fd.fname ^ " is a built-in function"
     and dup_err = "duplicate function name " ^ fd.fname
     and make_err er = raise (Failure er)
-    and n = fd.fname
+    and key = key_func fd.fname fd.formals
     in match fd with
-      _ when StringMap.mem n built_in_decls -> make_err built_in_err
-    | _ when StringMap.mem n map -> make_err dup_err
-    | _ -> StringMap.add n fd map
+      _ when List.mem fd.fname illegal_func_names -> make_err built_in_err
+    | _ when StringMap.mem key map -> make_err dup_err
+    | _ -> StringMap.add key fd map
   in 
 
   (* Collect all function names into one symbol table *)
@@ -147,7 +182,12 @@ let check (globals, funcs, stmts) =
         (sT1, (ot, SUnop(op, (t, e'))))
       | Call(fname, args) as call ->
         (* Return a function from our symbol table *)
-        let fd = find_func fname in 
+        (* FIXME: potential error as only use sT *)
+        let sparams = List.map (check_expr sT) args in
+        let get_expr sexpr = ("", fst (snd sexpr)) in
+        let params = List.map get_expr sparams in
+        let key = key_func fname params in
+        let fd = find_func key in 
         let param_length = List.length fd.formals in 
         if List.length args != param_length then 
           raise (Failure ("expecting " ^ string_of_int param_length ^ 
