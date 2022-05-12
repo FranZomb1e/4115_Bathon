@@ -8,18 +8,19 @@
 - semant.ml: semantic checker
 - sast.ml: semantically checked abstract syntax tree
 - irgen.ml: IR generation
-- builtin.c: 
+- builtin.c: builtin C functions and libraries.
 - test1.ml: test scanner and parser
 - test2.ml: test semantic checker
 - test3.ml: test IR (llvm) generation
-- test.sh: shell script to generate .native and .out files for testing
+- test.sh: (**hard-coded for testing gcd.ch**) shell script to generate .native and .out files for testing
+- test_print.sh: shell script to test test-print.ch
 
 - testcases/  
   - gcd.ch: greatest common divisor
   - test-bash-fund.ch: 
-  - test-list-func.ch
-  - test-list-fund.ch
-  - test-print.ch
+  - test-list-func.ch:
+  - test-list-fund.ch:
+  - test-print.ch: print
 - README.md
 
 ### Testing
@@ -286,5 +287,51 @@ example output - final executable (testcases/gcd.ch):
 3
 11
 9
+```
+
+#### testing for other test cases
+
+we write an individual testing shell script for each test case, e.g. 
+
+test-print.ch:
+
+```
+x : int
+y : float
+z : bool
+a : str
+
+x = 1
+print(x)
+print(2)
+y = 1.1
+print(y)
+print(2.2)
+z = True
+print(z)
+print(False)
+a = "1s"
+print(a)
+print("2s")
+```
+
+test by:
+
+```
+./test_print.sh
+./a.out
+```
+
+example output:
+
+```
+1
+2
+1.1
+2.2
+1
+0
+1s
+2s
 ```
 
