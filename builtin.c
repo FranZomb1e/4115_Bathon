@@ -43,6 +43,10 @@ void realloc_check(struct list *inlist)
 
 int append_str(struct list *inlist, char *str)
 {
+    if (inlist == NULL) {
+        printf("The current list is not initialized\n");
+        return -1;
+    }
     if (strcmp(inlist->type, "str"))
     {
         printf("Can only append %s, not str\n", inlist->type);
@@ -59,6 +63,10 @@ int append_str(struct list *inlist, char *str)
 
 int append_int(struct list *inlist, int num)
 {
+    if (inlist == NULL) {
+        printf("The current list is not initialized\n");
+        return -1;
+    }
     if (strcmp(inlist->type, "int"))
     {
         printf("Can only append %s, not int\n", inlist->type);
@@ -75,6 +83,10 @@ int append_int(struct list *inlist, int num)
 
 int append_float(struct list *inlist, float flt)
 {
+    if (inlist == NULL) {
+        printf("The current list is not initialized\n");
+        return -1;
+    }
     if (strcmp(inlist->type, "float"))
     {
         printf("Can only append %s, not float\n", inlist->type);
@@ -96,6 +108,10 @@ void *access_helper(struct list *inlist, int index)
 
 int access_int(struct list *inlist, int index)
 {
+    if (inlist == NULL) {
+        printf("The current list is not initialized\n");
+        return 0;
+    }
     if (strcmp(inlist->type, "int"))
     {
         printf("Can only access %s, not int\n", inlist->type);
@@ -114,6 +130,10 @@ int access_int(struct list *inlist, int index)
 
 float access_float(struct list *inlist, int index)
 {
+    if (inlist == NULL) {
+        printf("The current list is not initialized\n");
+        return 0;
+    }
     if (strcmp(inlist->type, "float"))
     {
         printf("Can only access %s, not float\n", inlist->type);
@@ -131,6 +151,10 @@ float access_float(struct list *inlist, int index)
 
 char *access_str(struct list *inlist, int index)
 {
+    if (inlist == NULL) {
+        printf("The current list is not initialized\n");
+        return 0;
+    }
     if (strcmp(inlist->type, "str"))
     {
         printf("Can only access %s, not str\n", inlist->type);
@@ -148,6 +172,10 @@ char *access_str(struct list *inlist, int index)
 
 int assign_int(struct list *inlist, int index, int toAssign)
 {
+    if (inlist == NULL) {
+        printf("The current list is not initialized\n");
+        return 0;
+    }
     if (strcmp(inlist->type, "int"))
     {
         printf("Can only access %s, not int\n", inlist->type);
@@ -167,6 +195,10 @@ int assign_int(struct list *inlist, int index, int toAssign)
 
 float assign_float(struct list *inlist, int index, float toAssign)
 {
+    if (inlist == NULL) {
+        printf("The current list is not initialized\n");
+        return 0;
+    }
     if (strcmp(inlist->type, "float"))
     {
         printf("Can only access %s, not float\n", inlist->type);
@@ -186,6 +218,10 @@ float assign_float(struct list *inlist, int index, float toAssign)
 
 char *assign_str(struct list *inlist, int index, char *toAssign)
 {
+    if (inlist == NULL) {
+        printf("The current list is not initialized\n");
+        return 0;
+    }
     if (strcmp(inlist->type, "str"))
     {
         printf("Can only access %s, not str\n", inlist->type);

@@ -22,31 +22,32 @@ let translate (globals, functions) =
   and float_t    = L.float_type   context in 
   let str_t      = L.pointer_type i8_t in
 
+  (* List type *)
+  let define_struct_typ name lltypes =
+    let struct_type = L.named_struct_type context name in
+    L.struct_set_body struct_type lltypes false;
+    L.pointer_type struct_type
+  in
+
+  let list_t = define_struct_typ "list" [| L.pointer_type (L.pointer_type i8_t); i32_t; i32_t; L.pointer_type i8_t |] in
+  
+
   (* Return the LLVM type for a Bathon type *)
   let ltype_of_typ = function
       A.Int    -> i32_t
     | A.Bool   -> i1_t
     | A.Float  -> float_t
     | A.Str -> str_t
-    | _ -> i32_t
+    | A.List(_) -> list_t
   in
 
-  (* List type *)
-  let define_struct_typ name lltypes =
-    let struct_type = L.named_struct_type context name in
-    L.struct_set_body struct_type lltypes false;
-    struct_type
-  in
-
-  let list_t = define_struct_typ "list" [| L.pointer_type (L.pointer_type i8_t); i32_t; i32_t; L.pointer_type i8_t |] in
-  
-  let list_hashtb = Hashtbl.create 10 in
+  (* let list_hashtb = Hashtbl.create 10 in *)
 
   let lvalue_of_typ t n =
     match t with
-    | A.List(ty) -> 
-      Hashtbl.add list_hashtb n false;
-      L.const_pointer_null (L.pointer_type list_t)
+    | A.List(_) -> 
+      (* Hashtbl.add list_hashtb n false; *)
+      L.const_pointer_null (ltype_of_typ t)
       (* L.set_value_name "uninit" lvalue;
       lvalue *)
     | A.Int | A.Bool ->
@@ -66,23 +67,23 @@ let translate (globals, functions) =
   
   (* BUILT-IN FUNCTION *)
   let printf_t : L.lltype =
-    L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
+    L.var_arg_function_type i32_t [| str_t |] in
   let printf_func : L.llvalue =
     L.declare_function "printf" printf_t the_module in
   
   let exec_t : L.lltype =
-    L.var_arg_function_type (L.pointer_type i8_t) [| L.pointer_type i8_t |] in
+    L.var_arg_function_type (str_t) [| str_t |] in
   let exec_func : L.llvalue =
     L.declare_function "exec" exec_t the_module in
   
   (* Create an empty list given a type *)
   let create_list_t : L.lltype =
-    L.function_type (L.pointer_type list_t) [| (ltype_of_typ A.Str) |] in
+    L.function_type list_t [| str_t |] in
   let create_list_func : L.llvalue =
     L.declare_function "create_list" create_list_t the_module in
   
   (* Access List *)
-  let access_params_t = [| (L.pointer_type list_t); (ltype_of_typ A.Int) |] in
+  let access_params_t = [| list_t; (ltype_of_typ A.Int) |] in
   (* int[] access via index *)
   let access_int_t : L.lltype =
     L.function_type (ltype_of_typ A.Int) access_params_t in
@@ -102,34 +103,34 @@ let translate (globals, functions) =
   (* Append List *)
   (* append int[] *)
   let append_int_t : L.lltype =
-    L.function_type (ltype_of_typ A.Int) [| (L.pointer_type list_t); (ltype_of_typ A.Int) |] in
+    L.function_type (ltype_of_typ A.Int) [| list_t; (ltype_of_typ A.Int) |] in
   let append_int_func : L.llvalue =
     L.declare_function "append_int" append_int_t the_module in
   (* append float[] *)
   let append_float_t : L.lltype =
-    L.function_type (ltype_of_typ A.Int) [| (L.pointer_type list_t); (ltype_of_typ A.Float) |] in
+    L.function_type (ltype_of_typ A.Int) [| list_t; (ltype_of_typ A.Float) |] in
   let append_float_func : L.llvalue =
     L.declare_function "append_float" append_float_t the_module in
   (* append str[] *)
   let append_str_t : L.lltype =
-    L.function_type (ltype_of_typ A.Int) [| (L.pointer_type list_t); (ltype_of_typ A.Str) |] in
+    L.function_type (ltype_of_typ A.Int) [| list_t; (ltype_of_typ A.Str) |] in
   let append_str_func : L.llvalue =
     L.declare_function "append_str" append_str_t the_module in
   
   (* Assign List *)
   (* assign int[] via index *)
   let assign_int_t : L.lltype = 
-    L.function_type (ltype_of_typ A.Int) [| (L.pointer_type list_t); (ltype_of_typ A.Int); (ltype_of_typ A.Int) |] in
+    L.function_type (ltype_of_typ A.Int) [| list_t; (ltype_of_typ A.Int); (ltype_of_typ A.Int) |] in
   let assign_int_func : L.llvalue = 
     L.declare_function "assign_int" assign_int_t the_module in
   (* assign float[] via index *)
   let assign_float_t : L.lltype = 
-    L.function_type (ltype_of_typ A.Float) [| (L.pointer_type list_t); (ltype_of_typ A.Int); (ltype_of_typ A.Float) |] in
+    L.function_type (ltype_of_typ A.Float) [| list_t; (ltype_of_typ A.Int); (ltype_of_typ A.Float) |] in
   let assign_float_func : L.llvalue =
     L.declare_function "assign_float" assign_float_t the_module in
   (* assign str[] via index *)
   let assign_str_t : L.lltype =
-    L.function_type (ltype_of_typ A.Str) [| (L.pointer_type list_t); (ltype_of_typ A.Int); (ltype_of_typ A.Str) |] in
+    L.function_type (ltype_of_typ A.Str) [| list_t; (ltype_of_typ A.Int); (ltype_of_typ A.Str) |] in
   let assign_str_func : L.llvalue =
     L.declare_function "assign_str" assign_str_t the_module in
 
@@ -238,38 +239,26 @@ let translate (globals, functions) =
       | SAccess (s, e) ->
         let idx = build_expr builder e in
         let li = L.build_load (lookup s) s builder in
-        let init = Hashtbl.find list_hashtb s in
-        if init = false then 
-          let err = "list: " ^ s ^ " not initiliazed" in
-          raise(Error err)
-        else
-          (* let t = fst typ_and_init in *)
-          let access_func = 
-            match e_t with
-              A.Int -> access_int_func
-            | A.Float -> access_float_func
-            | A.Str -> access_str_func
-            | _ -> raise(Error "access type not supported")
-          in
-          L.build_call access_func [| li; idx |] "access_typ" builder
+        let access_func = 
+          match e_t with
+            A.Int -> access_int_func
+          | A.Float -> access_float_func
+          | A.Str -> access_str_func
+          | _ -> raise(Error "access type not supported")
+        in
+        L.build_call access_func [| li; idx |] "access_typ" builder
       | SAccessAssign(s, e1, e2) ->
         let idx = build_expr builder e1 in
         let li = L.build_load (lookup s) s builder in
         let value = build_expr builder e2 in
-        let init = Hashtbl.find list_hashtb s in
-        if init = false then
-          let err = "list:" ^ s ^ " not initiliazed" in 
-          raise(Error err)
-        else
-          (* let t = fst typ_and_init in *)
-          let assign_func =
-            match e_t with
-              A.Int -> assign_int_func
-            | A.Float -> assign_float_func
-            | A.Str -> assign_str_func
-            | _ -> raise(Error "access assign type not supported")
-          in
-          L.build_call assign_func [| li; idx; value |] "assign_typ" builder
+        let assign_func =
+          match e_t with
+            A.Int -> assign_int_func
+          | A.Float -> assign_float_func
+          | A.Str -> assign_str_func
+          | _ -> raise(Error "access assign type not supported")
+        in
+        L.build_call assign_func [| li; idx; value |] "assign_typ" builder
       | SCall ("print", [ ((t, v) as e) ]) ->
         let print_value = 
           match t with
@@ -292,32 +281,29 @@ let translate (globals, functions) =
           raise(Error "list type is inconsistent with that of the append value")
         else
           let p = build_expr builder p_e in
-          (match sx with
-          | SId(s) ->
-            let found = Hashtbl.mem list_hashtb s in
-            if found = false then
-              raise(Error "unexpected error in append")
-            else
-              let li_llvalue = 
-                let init = Hashtbl.find list_hashtb s in
-                if init = false then
-                  let _ = Hashtbl.replace list_hashtb s true in
-                  let typ_string = (get_typ_string typ) in
-                  let typ_string_ptr = build_expr builder (A.Str, SStrLit(typ_string)) in
-                  (* create an empty list llvalue *)
-                  L.build_call create_list_func [| typ_string_ptr |] "create_list" builder
-                else build_expr builder li_e
-              in
-              let _ = ignore(L.build_store li_llvalue (lookup s) builder) in
-              let append_func =
-                match p_e with
+          let li = build_expr builder li_e in
+          let append_func = 
+            match p_e with
                   (A.Int, _) -> append_int_func
                 | (A.Float, _) -> append_float_func
                 | (A.Str, _) -> append_str_func
                 | _ -> raise(Error "append parameter type not supported")
-              in
-              L.build_call append_func [| li_llvalue; p |] "" builder
-          | _ -> raise(Error "unexpected error"))
+          in
+          L.build_call append_func [| li; p |] "" builder
+      | SCall ("init", [ (t, sx) ]) ->
+        let typ_string_ptr = 
+          (match t with
+          | A.List(_) -> 
+            let typ_string = (get_typ_string t) in
+            build_expr builder (A.Str, SStrLit(typ_string))
+          | _ -> raise(Error "init function only supports list initialization")) in
+        let li_lvalue = L.build_call create_list_func [| typ_string_ptr |] "create_list" builder in
+        let p_lvalue = 
+          (match sx with
+          | SId(s) -> 
+            lookup s
+          | _ -> raise(Error "init unexpected error")) in
+        L.build_store li_lvalue p_lvalue builder
       | SCall (f, args) ->
         let (fdef, fdecl) = StringMap.find f function_decls in
         let llargs = List.rev (List.map (build_expr builder) (List.rev args)) in
