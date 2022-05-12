@@ -3,7 +3,7 @@
 ### File Tree
 
 - scanner.mll: scanner
-- bathonparse.mly: parse
+- bathonparse.mly: parser
 - ast.ml: abstract syntax tree
 - semant.ml: semantic checker
 - sast.ml: semantically checked abstract syntax tree
