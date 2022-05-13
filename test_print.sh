@@ -1,7 +1,7 @@
 #/bin/bash
 
 ocamlbuild -pkg llvm test3.native
-./test3.native < ./testcases/gcd.ch > tmp.ll
+./test3.native < ./testcases/test-print.ch > tmp.ll
 clang -c builtin.c
 clang -c tmp.ll
 clang tmp.o builtin.o
