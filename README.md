@@ -157,7 +157,7 @@ brew install llvm
 opam install llvm.13.0.0
 ```
 
-run the following script to generate test3.native and a.out:
+run the following script to generate test3.native and a.out: (there could be some warning like **warning:** **overriding the module target triple with arm64-apple-macosx12.0.0 [-Woverride-module]**, although it doesn't affect testing too much)
 
 ```
 ./test.sh
