@@ -42,7 +42,7 @@ rule tokenize = parse
 | '='        { ASSIGN }
 (* Comparison Operators *)
 | "=="       { EQ }
-| "=<"       { LEQ }
+| "<="       { LEQ }
 | "<"        { LT } (* dup *)
 | ">="       { GEQ }
 | ">"        { GT } (* dup *)

@@ -26,6 +26,8 @@ let trd (_,_,c) = c;;
 %token <string> COMMAND
 %token EOL
 %token EOF
+%nonassoc NOELSE
+%nonassoc ELSE
 
 %start program
 %type <Ast.program> program
@@ -97,6 +99,7 @@ stmt:
   /* if (condition) { block1} else {block2} */
   /* if (condition) stmt else stmt */
   /* | IF LPAREN expr RPAREN stmt ELIF LPAREN expr RPAREN stmt ELSE stmt    { IfElif($3, $5, $8, $10, $12) } */
+  | IF LPAREN expr RPAREN stmt %prec NOELSE { If($3, $5, Block([])) }
   | IF LPAREN expr RPAREN stmt ELSE stmt    { If($3, $5, $7) }
   | FOR LPAREN expr IN expr RPAREN stmt       { For($3, $5, $7)} 
   | WHILE LPAREN expr RPAREN stmt           { While ($3, $5)  }

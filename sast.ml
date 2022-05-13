@@ -60,6 +60,7 @@ let rec string_of_sstmt = function
     SBlock(stmts) ->
       "{\n" ^ String.concat "" (List.map string_of_sstmt stmts) ^ "}\n"
   | SExpr(expr) -> string_of_sexpr expr ^ "\n"
+  | SIf(e, s, SBlock([])) -> "if (" ^ string_of_sexpr e ^ ")\n" ^ string_of_sstmt s
   | SIf(e, s1, s2) -> "if (" ^ string_of_sexpr e ^ ")\n" ^
                       string_of_sstmt s1 ^ "else\n" ^ string_of_sstmt s2
   | SWhile(e, s) -> "while (" ^ string_of_sexpr e ^ ")\n" ^ string_of_sstmt s

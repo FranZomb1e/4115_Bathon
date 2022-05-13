@@ -41,6 +41,15 @@ void realloc_check(struct list *inlist)
     }
 }
 
+int list_len(struct list *inlist)
+{
+    if (inlist == NULL) {
+        printf("The current list is not initialized\n");
+        return -1;
+    }
+    return inlist->size;
+}
+
 int append_str(struct list *inlist, char *str)
 {
     if (inlist == NULL) {

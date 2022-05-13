@@ -81,6 +81,12 @@ let translate (globals, functions) =
     L.function_type list_t [| str_t |] in
   let create_list_func : L.llvalue =
     L.declare_function "create_list" create_list_t the_module in
+
+  (* Length of List *)
+  let list_len_t : L.lltype = 
+    L.function_type (ltype_of_typ A.Int) [| list_t |] in
+  let list_len_func : L.llvalue =
+    L.declare_function "list_len" list_len_t the_module in
   
   (* Access List *)
   let access_params_t = [| list_t; (ltype_of_typ A.Int) |] in
@@ -304,6 +310,12 @@ let translate (globals, functions) =
             lookup s
           | _ -> raise(Error "init unexpected error")) in
         L.build_store li_lvalue p_lvalue builder
+      | SCall ("len", [ (t, _) as e ]) ->
+        let li = 
+          (match t with
+            A.List(_) -> build_expr builder e
+          | _ -> raise(Error "len function only supports list")) in
+        L.build_call list_len_func [| li |] "len" builder
       | SCall (f, args) ->
         let (fdef, fdecl) = StringMap.find f function_decls in
         let llargs = List.rev (List.map (build_expr builder) (List.rev args)) in
