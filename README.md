@@ -13,12 +13,14 @@
 - test2.ml: test semantic checker
 - test3.ml: test IR (llvm) generation
 - test.sh: (**hard-coded for testing gcd.ch**) shell script to generate .native and .out files for testing
+- test_binary_search.sh: shell script to test binary_search.ch
 - test_print.sh: shell script to test test-print.ch
 - test_list_func.sh: shell script to test test-list-func.ch
 - test_list_fund.sh: shell script to test test-list-fund.ch
 - test_bash_fund.sh: shell script to test test-bash-fund.ch
 - testcases/  
   - gcd.ch: naive greatest common divisor algorithm
+  - binary_search.ch: binary search algorithm, testing list in the meanwhile
   - test-bash-fund.ch: basic bash commands 'ls', 'touch', 'rm'
   - test-list-fund.ch: basic list methods such as append 
   - test-list-func.ch: pass list as a parameter of a function
