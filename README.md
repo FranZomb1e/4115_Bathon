@@ -19,7 +19,7 @@
 - test_bash_fund.sh: shell script to test test-bash-fund.ch
 - testcases/  
   - gcd.ch: naive greatest common divisor algorithm
-  - test-bash-fund.ch: basic bash command 'ls'.  
+  - test-bash-fund.ch: basic bash commands 'ls', 'touch', 'rm'
   - test-list-fund.ch: basic list methods such as append 
   - test-list-func.ch: pass list as a parameter of a function
   - test-print.ch: print
