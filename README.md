@@ -14,11 +14,13 @@
 - test3.ml: test IR (llvm) generation
 - test.sh: (**hard-coded for testing gcd.ch**) shell script to generate .native and .out files for testing
 - test_print.sh: shell script to test test-print.ch
-
+- test_list_func.sh: shell script to test test-list-func.ch
+- test_list_fund.sh: shell script to test test-list-fund.ch
+- test_bash_fund.sh: shell script to test test-bash-fund.ch
 - testcases/  
-  - gcd.ch: greatest common divisor
-  - test-bash-fund.ch: 
-  - test-list-func.ch:
+  - gcd.ch: naive greatest common divisor algorithm
+  - test-bash-fund.ch: basic bash command 'ls'.  
+  - test-list-func.ch: 
   - test-list-fund.ch:
   - test-print.ch: print
 - README.md
@@ -333,5 +335,22 @@ example output:
 0
 1s
 2s
+```
+
+And similarly others:
+
+```
+./test_list_func.sh
+./a.out
+```
+
+```
+./test_list_fund.sh
+./a.out
+```
+
+```
+./test_bash_fund.sh
+./a.out
 ```
 
