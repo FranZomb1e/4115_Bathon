@@ -20,8 +20,8 @@
 - testcases/  
   - gcd.ch: naive greatest common divisor algorithm
   - test-bash-fund.ch: basic bash command 'ls'.  
-  - test-list-func.ch: 
-  - test-list-fund.ch:
+  - test-list-fund.ch: basic list methods such as append 
+  - test-list-func.ch: pass list as a parameter of a function
   - test-print.ch: print
 - README.md
 
