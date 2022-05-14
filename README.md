@@ -356,3 +356,8 @@ And similarly others:
 ./a.out
 ```
 
+```
+./binary_search.ch
+./a.out
+```
+
