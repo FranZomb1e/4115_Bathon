@@ -347,11 +347,12 @@ let check (globals, funcs, stmts) =
         let (sT1, sast1) = check_bool_expr sT e in
         let (sT2, sast2) = check_stmt sT1 st in
         (sT2, SWhile(sast1, sast2))
-      | For(e1, e2, st) -> 
-        let (sT1, sast1) = check_expr sT e1 in
-        let (sT2, sast2) = check_expr sT1 e2 in
-        let (sT3, sast3) = check_stmt sT2 st in
-        (sT3, SFor(sast1, sast2, sast3))
+      | For(e1, e2, e3, s) -> 
+        let (sT1, sast1) = check_expr sT e1 in 
+        let (sT2, sast2) = check_expr sT1 e2 in 
+        let (sT3, sast3) = check_expr sT2 e3 in 
+        let (sT4, sast4) = check_stmt sT3 s in 
+        (sT4, SFor(sast1, sast2, sast3, sast4))
       | Return e ->
         let (sT1, (t, e')) = check_expr sT e in 
         if t = func.rtyp then (sT1, SReturn (t, e'))

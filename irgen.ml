@@ -370,7 +370,24 @@ let translate (globals, functions) =
 
         ignore(L.build_cond_br bool_val body_bb end_bb while_builder);
         L.builder_at_end context end_bb
-      | _ -> raise(Error "Unreachable")
+      | SFor(init, predicate, update, body) -> 
+        ignore(build_expr builder init); 
+        let for_bb = L.append_block context "for" the_function in 
+        let build_br_for = L.build_br for_bb in 
+        ignore (build_br_for builder); (* build a branch that jumps to "for" basic block *)
+        let for_builder = L.builder_at_end context for_bb in 
+        let bool_val = build_expr for_builder predicate in 
+
+        let body_bb = L.append_block context "for_body" the_function in 
+        ignore (build_stmt (L.builder_at_end context body_bb) body);
+        ignore (build_expr (L.builder_at_end context body_bb) update);
+        add_terminal (L.builder_at_end context body_bb) build_br_for; (* add br to "for" bb at the end of "for_body" bb*)
+
+        let end_bb = L.append_block context "for_end" the_function in 
+
+        ignore(L.build_cond_br bool_val body_bb end_bb for_builder);
+        L.builder_at_end context end_bb
+      (* | _ -> raise(Error "Unreachable") *)
 
     in
     (* Build the code for each statement in the function *)

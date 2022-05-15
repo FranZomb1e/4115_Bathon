@@ -22,7 +22,7 @@ type sstmt =
   | SExpr of sexpr
   | SIf of sexpr * sstmt * sstmt
   | SWhile of sexpr * sstmt
-  | SFor of sexpr * sexpr * sstmt
+  | SFor of sexpr * sexpr * sexpr * sstmt
   | SReturn of sexpr
   | SEmpty
 
@@ -64,7 +64,7 @@ let rec string_of_sstmt = function
   | SIf(e, s1, s2) -> "if (" ^ string_of_sexpr e ^ ")\n" ^
                       string_of_sstmt s1 ^ "else\n" ^ string_of_sstmt s2
   | SWhile(e, s) -> "while (" ^ string_of_sexpr e ^ ")\n" ^ string_of_sstmt s
-  | SFor(e1, e2, s) -> "for (" ^ string_of_sexpr e1 ^ " in " ^ string_of_sexpr e2 ^ ")\n" ^
+  | SFor(e1, e2, e3, s) -> "for (" ^ string_of_sexpr e1 ^ "; " ^ string_of_sexpr e2 ^ "; " ^ string_of_sexpr e3 ^ ")\n" ^
                       string_of_sstmt s
   | SReturn(expr) -> "return " ^ string_of_sexpr expr ^ "\n"
   | SEmpty -> ""

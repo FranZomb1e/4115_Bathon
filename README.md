@@ -18,6 +18,7 @@
 - test_list_func.sh: shell script to test test-list-func.ch
 - test_list_fund.sh: shell script to test test-list-fund.ch
 - test_bash_fund.sh: shell script to test test-bash-fund.ch
+- test_for.sh: shell script to test test-for.ch
 - testcases/  
   - gcd.ch: naive greatest common divisor algorithm
   - binary_search.ch: binary search algorithm, testing list in the meanwhile
@@ -25,6 +26,7 @@
   - test-list-fund.ch: basic list methods such as append 
   - test-list-func.ch: pass list as a parameter of a function
   - test-print.ch: print
+  - test-for.ch: for loop
 - README.md
 
 ### Testing
@@ -357,7 +359,12 @@ And similarly others:
 ```
 
 ```
-./binary_search.ch
+./binary_search.sh
+./a.out
+```
+
+```
+./test_for.sh
 ./a.out
 ```
 
